@@ -1,0 +1,32 @@
+# Установленные зависимости; файлы фиксации версий сохраняем.
+node_modules/
+vendor/
+
+# Локальное окружение; безопасные примеры настроек сохраняем.
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Закрытые загрузки и данные, создаваемые при работе приложения.
+/storage/*
+!/storage/.gitkeep
+!/storage/README.md
+*.log
+*.pid
+
+# Кэш и результаты тестов.
+.cache/
+.phpunit.cache/
+.phpunit.result.cache
+/coverage/
+
+# Локальные файлы редактора и операционной системы.
+.idea/
+.vscode/*.local.json
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini

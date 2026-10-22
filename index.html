@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="УниМаркет — учебные материалы, консультации и помощь студентов за баллы.">
+  <title>УниМаркет — учиться легче вместе</title>
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/landing.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Перейти к содержимому</a>
+  <header class="site-header">
+    <div class="site-header__vnutri container">
+      <a class="brand" href="index.html" aria-label="УниМаркет — главная">
+        <img src="assets/icons/logo.svg" width="64" height="64" alt="">
+        <span>УниМаркет</span>
+      </a>
+      <nav class="site-header__actions" aria-label="Вход и регистрация">
+        <a class="button button--secondary" href="pages/auth/login.html" aria-label="Войти" title="Войти">
+          <img src="assets/icons/login.svg" width="24" height="24" alt="">
+          <span>Войти</span>
+        </a>
+        <a class="button button--main" href="pages/auth/login.html#registraciya" aria-label="Создать аккаунт" title="Создать аккаунт">
+          <img src="assets/icons/user-plus.svg" width="24" height="24" alt="">
+          <span>Создать аккаунт</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+  <main class="landing container" id="main">
+    <h1>Учиться легче вместе</h1>
+    <section class="welcome" aria-labelledby="welcome-title">
+      <div class="welcome__content">
+        <h2 id="welcome-title">Твои знания тоже<br>кому-то нужны.</h2>
+        <p>Поделись конспектом и получи баллы для новых материалов.</p>
+        <a class="button button--main" href="pages/auth/login.html#registraciya">Создать аккаунт</a>
+      </div>
+      <div class="welcome__nagrada">
+        <p class="welcome__points">+100 <span>баллов</span></p>
+        <p>За одобренный материал</p>
+      </div>
+    </section>
+    <section class="materials" aria-labelledby="materials-title">
+      <h2 id="materials-title">Полезное уже ждёт в каталоге</h2>
+      <div class="material-grid">
+        <article class="material-card material-card--green" aria-labelledby="algebra-title">
+          <div class="material-card__verh">
+            <p class="material-card__meta">Конспект · 2 курс</p>
+            <a class="material-card__save" href="pages/auth/login.html" aria-label="Войти, чтобы сохранить «Линейная алгебра»">
+              <img src="assets/icons/heart-filled.svg" width="24" height="24" alt="">
+            </a>
+          </div>
+          <div class="material-card__content">
+            <h3 id="algebra-title">Линейная алгебра</h3>
+            <p>Матрицы, векторы и определения</p>
+          </div>
+          <div class="material-card__niz">
+            <p class="material-card__author">Анна К. · <span aria-label="Рейтинг 4,9 из 5">★ 4,9</span></p>
+            <p class="material-card__price">120 баллов</p>
+          </div>
+        </article>
+        <article class="material-card material-card--blue" aria-labelledby="algorithms-title">
+          <div class="material-card__verh">
+            <p class="material-card__meta">Решённые задачи · 2 курс</p>
+            <a class="material-card__save" href="pages/auth/login.html" aria-label="Войти, чтобы сохранить «Алгоритмы и структуры»">
+              <img src="assets/icons/heart-filled.svg" width="24" height="24" alt="">
+            </a>
+          </div>
+          <div class="material-card__content">
+            <h3 id="algorithms-title">Алгоритмы и структуры</h3>
+            <p>35 задач с объяснениями</p>
+          </div>
+          <div class="material-card__niz">
+            <p class="material-card__author">Михаил С. · <span aria-label="Рейтинг 4,8 из 5">★ 4,8</span></p>
+            <p class="material-card__price">180 баллов</p>
+          </div>
+        </article>
+        <article class="material-card material-card--lavandoviy" aria-labelledby="economics-title">
+          <div class="material-card__verh">
+            <p class="material-card__meta">Шпаргалка · 1 курс</p>
+            <a class="material-card__save" href="pages/auth/login.html" aria-label="Войти, чтобы сохранить «Экономика на ладони»">
+              <img src="assets/icons/heart-outline.svg" width="24" height="24" alt="">
+            </a>
+          </div>
+          <div class="material-card__content">
+            <h3 id="economics-title">Экономика на ладони</h3>
+            <p>Главные понятия и определения</p>
+          </div>
+          <div class="material-card__niz">
+            <p class="material-card__author">Дарья М. · <span aria-label="Рейтинг 4,9 из 5">★ 4,9</span></p>
+            <p class="material-card__price">60 баллов</p>
+          </div>
+        </article>
+        <article class="material-card material-card--green" aria-labelledby="physics-title">
+          <div class="material-card__verh">
+            <p class="material-card__meta">Сборник формул · 1 курс</p>
+            <a class="material-card__save" href="pages/auth/login.html" aria-label="Войти, чтобы сохранить «Физика без паники»">
+              <img src="assets/icons/heart-outline.svg" width="24" height="24" alt="">
+            </a>
+          </div>
+          <div class="material-card__content">
+            <h3 id="physics-title">Физика без паники</h3>
+            <p>Формулы и примеры решений</p>
+          </div>
+          <div class="material-card__niz">
+            <p class="material-card__author">Илья П. · <span aria-label="Рейтинг 4,7 из 5">★ 4,7</span></p>
+            <p class="material-card__price">90 баллов</p>
+          </div>
+        </article>
+      </div>
+    </section>
+    <section class="zayavka-banner" aria-labelledby="request-title">
+      <div class="zayavka-banner__content">
+        <h2 id="request-title">Не нашёл нужное?</h2>
+        <p>Создай заявку на свою задачу — другие студенты предложат помощь.</p>
+      </div>
+      <!-- Возврат к созданию заявки после входа подключим вместе с авторизацией. -->
+      <a class="button button--main" href="pages/auth/login.html">Создать заявку</a>
+    </section>
+    <section class="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Частые вопросы</h2>
+      <div class="faq__items">
+        <details class="faq__item" id="points" open>
+          <summary>Как получить баллы?</summary>
+          <p>За публикацию одобренного материала и за выполненный заказ.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Что я получаю после покупки?</summary>
+          <p>Доступ к приобретённому файлу в личном кабинете.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Как заказать услугу?</summary>
+          <p>Выбери услугу, согласуй результат, срок и цену с исполнителем в чате, затем оплати её баллами.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Можно ли загружать чужие материалы?</summary>
+          <p>Размещай собственные материалы или те, на распространение которых есть разрешение.</p>
+        </details>
+        <details class="faq__item">
+          <summary>Что делать при проблеме?</summary>
+          <p>Открой заказ и опиши проблему. Модератор рассмотрит обращение и поможет решить вопрос.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="site-footer__vnutri container">
+      <a class="brand" href="index.html">УниМаркет</a>
+      <nav class="site-footer__nav" aria-label="Полезные ссылки">
+        <a href="pages/auth/login.html">Каталог</a>
+        <a href="pages/help.html">Правила и помощь</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,167 @@
+@font-face {
+  font-family: Manrope;
+  src: url("../fonts/Manrope-Variable.ttf") format("truetype");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --fon: #f5f6f1;
+  --poverhnost: #fff;
+  --tekst: #19221c;
+  --tekst-vtorichniy: #677069;
+  --granica: #e0e5db;
+  --akcent: #d3f36a;
+  --akcent-navedeniye: #c0e64f;
+  --temniy: #202c23;
+  --green-fon: #eef5d9;
+  --blue-fon: #dfecf5;
+  --lavandoviy-fon: #ebe5f7;
+  --razdelitel: #858585;
+  --oshibka: #b42318;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  margin: 0;
+  background: var(--fon);
+  color: var(--tekst);
+  font: 400 15px/1.4 Manrope, Arial, sans-serif;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 44px;
+  font-weight: 800;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--tekst);
+  outline-offset: 4px;
+}
+
+.container {
+  width: min(1280px, calc(100% - 64px));
+  margin-inline: auto;
+}
+
+.site-header {
+  background: var(--poverhnost);
+}
+
+.site-header .brand img {
+  width: 64px;
+  height: 64px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 150ms, border-color 150ms;
+}
+
+.button--main {
+  background: var(--akcent);
+  color: var(--tekst);
+}
+
+.button--secondary {
+  border-color: var(--granica);
+  background: var(--poverhnost);
+}
+
+@media (hover: hover) {
+  .button--main:hover {
+    background: var(--akcent-navedeniye);
+  }
+
+  .button--secondary:hover {
+    background: var(--green-fon);
+  }
+}
+
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 16px;
+  z-index: 10;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--akcent);
+  transform: translateY(-160%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+@media (max-width: 767.98px) {
+  .site-header .brand {
+    font-size: 20px;
+  }
+
+  .site-header .brand img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .container {
+    width: calc(100% - 32px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+}

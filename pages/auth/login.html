@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Вход, регистрация и восстановление доступа в УниМаркет.">
+  <title>Вход и регистрация — УниМаркет</title>
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <link rel="stylesheet" href="../../assets/css/auth.css">
+  <!-- Выбираем форму до отрисовки, чтобы регистрация не мигала экраном входа. -->
+  <script src="../../assets/js/auth.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#vhod">Перейти к содержимому</a>
+  <header class="site-header dostup-header">
+    <div class="container">
+      <a class="brand" href="../../index.html" aria-label="УниМаркет — главная">
+        <img src="../../assets/icons/logo.svg" width="64" height="64" alt="">
+        <span>УниМаркет</span>
+      </a>
+    </div>
+  </header>
+  <main class="dostup container">
+    <section class="dostup__ekran dostup__ekran--vhod" id="vhod" aria-labelledby="vhod-title">
+      <h1 id="vhod-title">С возвращением</h1>
+      <form class="dostup__forma" method="post" aria-labelledby="vhod-forma">
+        <h2 id="vhod-forma">Вход</h2>
+        <label class="pole" for="vhod-email">
+          <span>Email</span>
+          <input id="vhod-email" name="email" type="email" placeholder="student@example.edu" autocomplete="username" required>
+        </label>
+        <div class="pole">
+          <label for="vhod-parol">Пароль</label>
+          <div class="pole__parol">
+            <input id="vhod-parol" name="password" type="password" placeholder="••••••••" autocomplete="current-password" required>
+            <button class="pole__pokaz" type="button" aria-label="Показать пароль" aria-controls="vhod-parol" aria-pressed="false" data-parol>
+              <img src="../../assets/icons/eye.svg" width="20" height="20" alt="">
+            </button>
+          </div>
+        </div>
+        <button class="button button--main" type="submit" disabled>Войти</button>
+        <p class="dostup__status" role="status" hidden></p>
+        <a href="#vosstanovlenie">Забыл пароль?</a>
+        <p>Нет аккаунта? <a href="#registraciya">Зарегистрироваться</a></p>
+      </form>
+    </section>
+    <section class="dostup__ekran" id="registraciya" aria-labelledby="registraciya-title">
+      <div class="dostup__privetstvie">
+        <h1 id="registraciya-title">Добро пожаловать в УниМаркет</h1>
+        <p id="registraciya-opisanie">Создай аккаунт, чтобы делиться знаниями и находить помощь с учёбой.</p>
+      </div>
+      <form class="dostup__forma" method="post" aria-labelledby="registraciya-title" aria-describedby="registraciya-opisanie">
+        <label class="pole" for="imya">
+          <span>Имя</span>
+          <input id="imya" name="first_name" placeholder="Как к тебе обращаться" autocomplete="given-name" maxlength="80" required>
+        </label>
+        <label class="pole" for="familiya">
+          <span>Фамилия</span>
+          <input id="familiya" name="last_name" placeholder="Твоя фамилия" autocomplete="family-name" maxlength="80" required>
+        </label>
+        <label class="pole" for="registraciya-email">
+          <span>Email</span>
+          <input id="registraciya-email" name="email" type="email" placeholder="student@example.edu" autocomplete="email" required>
+        </label>
+        <label class="pole" for="kurs">
+          <span>Курс</span>
+          <select id="kurs" name="course" required>
+            <option value="" disabled selected>Выбери курс</option>
+            <option value="1">1 курс</option>
+            <option value="2">2 курс</option>
+            <option value="3">3 курс</option>
+            <option value="4">4 курс</option>
+            <option value="5">5 курс</option>
+            <option value="6">6 курс</option>
+          </select>
+        </label>
+        <div class="pole">
+          <label for="registraciya-parol">Пароль</label>
+          <div class="pole__parol">
+            <input id="registraciya-parol" name="password" type="password" placeholder="Не менее 8 символов" autocomplete="new-password" minlength="8" required>
+            <button class="pole__pokaz" type="button" aria-label="Показать пароль" aria-controls="registraciya-parol" aria-pressed="false" data-parol>
+              <img src="../../assets/icons/eye.svg" width="20" height="20" alt="">
+            </button>
+          </div>
+        </div>
+        <div class="pole">
+          <label for="povtor-parol">Повтори пароль</label>
+          <div class="pole__parol">
+            <input id="povtor-parol" name="password_confirmation" type="password" placeholder="Повтори пароль" autocomplete="new-password" minlength="8" required>
+            <button class="pole__pokaz" type="button" aria-label="Показать пароль" aria-controls="povtor-parol" aria-pressed="false" data-parol>
+              <img src="../../assets/icons/eye.svg" width="20" height="20" alt="">
+            </button>
+          </div>
+        </div>
+        <label class="dostup__soglasie">
+          <input name="terms" type="checkbox" required>
+          <span>Принимаю правила обмена материалами.</span>
+        </label>
+        <button class="button button--main" type="submit" disabled>Создать аккаунт</button>
+        <p class="dostup__status" role="status" hidden></p>
+        <p>Уже есть аккаунт? <a href="#vhod">Войти</a></p>
+      </form>
+    </section>
+    <section class="dostup__ekran" id="vosstanovlenie" aria-labelledby="vosstanovlenie-title">
+      <h1 id="vosstanovlenie-title">Восстановить доступ</h1>
+      <form class="dostup__forma" method="post" aria-labelledby="vosstanovlenie-forma">
+        <h2 id="vosstanovlenie-forma">Сброс пароля</h2>
+        <label class="pole" for="vosstanovlenie-email">
+          <span>Email</span>
+          <input id="vosstanovlenie-email" name="email" type="email" placeholder="student@example.edu" autocomplete="email" required>
+        </label>
+        <button class="button button--main" type="submit" disabled>Получить ссылку</button>
+        <p class="dostup__status" role="status" hidden></p>
+        <a href="#vhod">Вернуться ко входу</a>
+      </form>
+    </section>
+    <nav class="dostup__nav" aria-label="Полезные ссылки">
+      <a href="../../index.html#faq-title">Помощь и правила</a>
+      <span aria-hidden="true">·</span>
+      <a href="../../index.html">На главную</a>
+    </nav>
+    <p class="dostup__primechanie">Пока доступна только вёрстка: вход, создание аккаунта и отправка писем ещё не подключены.</p>
+    <noscript><p class="dostup__primechanie">Включи JavaScript для переключения форм, проверки полей и показа пароля.</p></noscript>
+  </main>
+</body>
+</html>

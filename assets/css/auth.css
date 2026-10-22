@@ -1,0 +1,283 @@
+.dostup-header {
+  padding-block: 12px;
+}
+
+.dostup-header .container {
+  display: flex;
+}
+
+.dostup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding-block: 32px 40px;
+}
+
+.dostup__ekran {
+  display: none;
+  flex-direction: column;
+  width: min(520px, 100%);
+  gap: 24px;
+  scroll-margin-top: 120px;
+}
+
+html:not([data-ekran]) .dostup__ekran--vhod,
+[data-ekran="vhod"] #vhod,
+[data-ekran="registraciya"] #registraciya,
+[data-ekran="vosstanovlenie"] #vosstanovlenie {
+  display: flex;
+}
+
+.dostup h1 {
+  font-size: 32px;
+  text-align: center;
+}
+
+.dostup__privetstvie p {
+  margin-top: 8px;
+  color: var(--tekst-vtorichniy);
+  text-align: center;
+}
+
+.dostup__forma {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--poverhnost);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dostup__forma h2 {
+  font-size: 18px;
+}
+
+.dostup__forma a,
+.dostup__nav a {
+  text-underline-offset: 3px;
+}
+
+.dostup__forma a:hover,
+.dostup__forma a:focus-visible,
+.dostup__nav a {
+  text-decoration: underline;
+}
+
+.pole {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 8px;
+}
+
+.pole input,
+.pole select {
+  width: 100%;
+  min-width: 0;
+  height: 52px;
+  padding: 12px 16px;
+  border: 1px solid var(--granica);
+  border-radius: 12px;
+  background: var(--poverhnost);
+  color: var(--tekst);
+  font: 400 15px/1.4 Manrope, Arial, sans-serif;
+}
+
+.pole input:focus,
+.pole select:focus {
+  border-color: var(--tekst);
+  outline: none;
+}
+
+.pole input::placeholder {
+  color: var(--tekst-vtorichniy);
+  opacity: 1;
+}
+
+.dostup__forma--proverena .pole input:invalid,
+.dostup__forma--proverena .pole select:invalid {
+  border-color: var(--oshibka);
+}
+
+.dostup__forma--proverena .dostup__soglasie:has(input:invalid) {
+  color: var(--oshibka);
+}
+
+.pole select {
+  appearance: none;
+  padding-right: 48px;
+  background: var(--poverhnost) url("../icons/chevron-down.svg") right 16px center / 20px no-repeat;
+  cursor: pointer;
+}
+
+.pole select:invalid {
+  color: var(--tekst-vtorichniy);
+}
+
+@supports (appearance: base-select) {
+  .pole select,
+  .pole select::picker(select) {
+    appearance: base-select;
+  }
+
+  .pole select {
+    align-items: center;
+    padding-right: 16px;
+    background-image: none;
+  }
+
+  .pole select::picker-icon {
+    content: url("../icons/chevron-down.svg");
+    width: 20px;
+    height: 20px;
+  }
+
+  .pole select:open::picker-icon {
+    transform: rotate(180deg);
+  }
+
+  .pole select::picker(select) {
+    margin-block: 8px;
+    padding: 6px;
+    border: 1px solid var(--granica);
+    border-radius: 12px;
+    background: var(--poverhnost);
+    color: var(--tekst);
+    box-shadow: 0 8px 24px rgb(25 34 28 / 12%);
+  }
+
+  .pole option {
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .pole option:disabled {
+    display: none;
+  }
+
+  .pole option:checked {
+    background: var(--green-fon);
+    font-weight: 600;
+  }
+
+  .pole option:hover,
+  .pole option:focus {
+    outline: none;
+    background: var(--akcent);
+  }
+
+  .pole option::checkmark {
+    order: 1;
+    margin-left: auto;
+  }
+}
+
+.pole__parol {
+  position: relative;
+}
+
+.pole__parol input {
+  padding-right: 56px;
+}
+
+.pole__pokaz {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.pole__pokaz[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 1.5px;
+  background: var(--tekst-vtorichniy);
+  transform: rotate(45deg);
+}
+
+.dostup__soglasie {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.dostup__soglasie input {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--tekst);
+}
+
+.dostup__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  color: var(--tekst-vtorichniy);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.dostup__primechanie {
+  max-width: 520px;
+  color: var(--tekst-vtorichniy);
+  font-size: 12px;
+  text-align: center;
+}
+
+.dostup__status {
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--green-fon);
+  font-weight: 400;
+}
+
+.dostup__status--oshibka {
+  padding: 0;
+  background: none;
+  color: var(--oshibka);
+}
+
+.dostup .button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 767.98px) {
+  .dostup {
+    padding-block: 24px 32px;
+  }
+
+  .dostup h1 {
+    font-size: clamp(24px, 6vw, 28px);
+  }
+
+  .dostup__forma {
+    padding: 20px 16px;
+  }
+
+  .pole input,
+  .pole select {
+    font-size: 16px;
+  }
+}
