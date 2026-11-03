@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Каталог — УниМаркет</title>
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/catalog.css">
+  <script src="../assets/js/account.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Перейти к содержимому</a>
+  <header class="site-header">
+    <div class="container katalog__header">
+      <a class="brand" href="/pages/catalog.html">
+        <img src="../assets/icons/logo.svg" width="64" height="64" alt="">
+        <span>УниМаркет</span>
+      </a>
+      <button class="button button--secondary" id="viyti" disabled>Выйти</button>
+    </div>
+  </header>
+  <main class="container katalog" id="main">
+    <h1>Учебные материалы</h1>
+    <section class="katalog__akkaunt" aria-label="Аккаунт">
+      <p>Ты вошёл как <strong id="email">…</strong></p>
+      <p>Баланс: <strong id="balance">…</strong> баллов · В резерве: <strong id="reserve">…</strong></p>
+    </section>
+    <p id="status" role="status">Загружаем данные аккаунта…</p>
+    <p>Публикация и покупка материалов будут подключены на следующем этапе.</p>
+    <noscript><p>Включи JavaScript для загрузки аккаунта и выхода.</p></noscript>
+  </main>
+</body>
+</html>

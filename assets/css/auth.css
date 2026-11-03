@@ -24,8 +24,7 @@
 
 html:not([data-ekran]) .dostup__ekran--vhod,
 [data-ekran="vhod"] #vhod,
-[data-ekran="registraciya"] #registraciya,
-[data-ekran="vosstanovlenie"] #vosstanovlenie {
+[data-ekran="registraciya"] #registraciya {
   display: flex;
 }
 
@@ -73,8 +72,7 @@ html:not([data-ekran]) .dostup__ekran--vhod,
   gap: 8px;
 }
 
-.pole input,
-.pole select {
+.pole input {
   width: 100%;
   min-width: 0;
   height: 52px;
@@ -86,8 +84,7 @@ html:not([data-ekran]) .dostup__ekran--vhod,
   font: 400 15px/1.4 Manrope, Arial, sans-serif;
 }
 
-.pole input:focus,
-.pole select:focus {
+.pole input:focus {
   border-color: var(--tekst);
   outline: none;
 }
@@ -95,88 +92,6 @@ html:not([data-ekran]) .dostup__ekran--vhod,
 .pole input::placeholder {
   color: var(--tekst-vtorichniy);
   opacity: 1;
-}
-
-.dostup__forma--proverena .pole input:invalid,
-.dostup__forma--proverena .pole select:invalid {
-  border-color: var(--oshibka);
-}
-
-.dostup__forma--proverena .dostup__soglasie:has(input:invalid) {
-  color: var(--oshibka);
-}
-
-.pole select {
-  appearance: none;
-  padding-right: 48px;
-  background: var(--poverhnost) url("../icons/chevron-down.svg") right 16px center / 20px no-repeat;
-  cursor: pointer;
-}
-
-.pole select:invalid {
-  color: var(--tekst-vtorichniy);
-}
-
-@supports (appearance: base-select) {
-  .pole select,
-  .pole select::picker(select) {
-    appearance: base-select;
-  }
-
-  .pole select {
-    align-items: center;
-    padding-right: 16px;
-    background-image: none;
-  }
-
-  .pole select::picker-icon {
-    content: url("../icons/chevron-down.svg");
-    width: 20px;
-    height: 20px;
-  }
-
-  .pole select:open::picker-icon {
-    transform: rotate(180deg);
-  }
-
-  .pole select::picker(select) {
-    margin-block: 8px;
-    padding: 6px;
-    border: 1px solid var(--granica);
-    border-radius: 12px;
-    background: var(--poverhnost);
-    color: var(--tekst);
-    box-shadow: 0 8px 24px rgb(25 34 28 / 12%);
-  }
-
-  .pole option {
-    align-items: center;
-    min-height: 44px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    font: inherit;
-    cursor: pointer;
-  }
-
-  .pole option:disabled {
-    display: none;
-  }
-
-  .pole option:checked {
-    background: var(--green-fon);
-    font-weight: 600;
-  }
-
-  .pole option:hover,
-  .pole option:focus {
-    outline: none;
-    background: var(--akcent);
-  }
-
-  .pole option::checkmark {
-    order: 1;
-    margin-left: auto;
-  }
 }
 
 .pole__parol {
@@ -209,23 +124,6 @@ html:not([data-ekran]) .dostup__ekran--vhod,
   height: 1.5px;
   background: var(--tekst-vtorichniy);
   transform: rotate(45deg);
-}
-
-.dostup__soglasie {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.dostup__soglasie input {
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  accent-color: var(--tekst);
 }
 
 .dostup__nav {
@@ -276,8 +174,7 @@ html:not([data-ekran]) .dostup__ekran--vhod,
     padding: 20px 16px;
   }
 
-  .pole input,
-  .pole select {
+  .pole input {
     font-size: 16px;
   }
 }
