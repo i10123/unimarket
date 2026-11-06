@@ -12,8 +12,8 @@
 </head>
 <body>
   <a class="skip-link" href="#vhod">Перейти к содержимому</a>
-  <header class="site-header dostup-header">
-    <div class="container">
+  <header class="site-header">
+    <div class="site-header__vnutri container">
       <a class="brand" href="../../index.html" aria-label="УниМаркет — главная">
         <img src="../../assets/icons/logo.svg" width="64" height="64" alt="">
         <span>УниМаркет</span>
@@ -24,9 +24,9 @@
     <section class="dostup__ekran dostup__ekran--vhod" id="vhod" aria-labelledby="vhod-title">
       <h1 id="vhod-title">С возвращением</h1>
       <form class="dostup__forma" method="post" data-action="login" aria-labelledby="vhod-title">
-        <label class="pole" for="vhod-email">
-          <span>Email</span>
-          <input id="vhod-email" name="email" type="email" placeholder="student@example.edu" autocomplete="username" maxlength="254" required>
+        <label class="pole" for="vhod-login">
+          <span>Логин</span>
+          <input id="vhod-login" name="login" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="32" required>
         </label>
         <div class="pole">
           <label for="vhod-parol">Пароль</label>
@@ -38,7 +38,7 @@
           </div>
         </div>
         <button class="button button--main" type="submit" disabled>Войти</button>
-        <p class="dostup__status dostup__status--oshibka" role="status" hidden></p>
+        <p class="dostup__status" role="status" hidden></p>
         <p>Нет аккаунта? <a href="#registraciya">Зарегистрироваться</a></p>
       </form>
     </section>
@@ -48,10 +48,11 @@
         <p>Создай аккаунт, чтобы обмениваться учебными материалами.</p>
       </div>
       <form class="dostup__forma" method="post" data-action="register" aria-labelledby="registraciya-title">
-        <label class="pole" for="registraciya-email">
-          <span>Email</span>
-          <input id="registraciya-email" name="email" type="email" placeholder="student@example.edu" autocomplete="email" maxlength="254" required>
-        </label>
+        <div class="pole">
+          <label for="registraciya-login">Логин</label>
+          <input id="registraciya-login" name="login" type="text" placeholder="student_2026" autocomplete="username" autocapitalize="none" spellcheck="false" minlength="3" maxlength="32" pattern="[A-Za-z0-9_.\-]{3,32}" aria-describedby="login-podskazka" required>
+          <small id="login-podskazka">3–32 символа: латиница, цифры, _ . - Логин виден другим как имя продавца.</small>
+        </div>
         <div class="pole">
           <label for="registraciya-parol">Пароль</label>
           <div class="pole__parol">
@@ -63,7 +64,7 @@
           <small id="parol-podskazka">От 8 символов. Сохрани пароль: восстановления нет.</small>
         </div>
         <button class="button button--main" type="submit" disabled>Создать аккаунт</button>
-        <p class="dostup__status dostup__status--oshibka" role="status" hidden></p>
+        <p class="dostup__status" role="status" hidden></p>
         <p>Уже есть аккаунт? <a href="#vhod">Войти</a></p>
       </form>
     </section>
@@ -71,7 +72,7 @@
       <a href="../../index.html#faq-title">Помощь и правила</a>
       <a href="../../index.html">На главную</a>
     </nav>
-    <p class="dostup__primechanie">Email используется как логин. Письма не отправляются.</p>
+    <p class="dostup__primechanie">Запомни логин и пароль: восстановить их через сайт нельзя.</p>
     <noscript><p class="dostup__primechanie">Для регистрации и входа включи JavaScript.</p></noscript>
   </main>
 </body>

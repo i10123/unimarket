@@ -13,4 +13,11 @@ $process = Start-Process -FilePath $php -ArgumentList @(
     -RedirectStandardOutput "$projectDir\storage\php-output.log" `
     -RedirectStandardError "$projectDir\storage\php-error.log"
 $process.Id | Set-Content -LiteralPath "$projectDir\storage\php.pid"
+# Ждём, пока сервер начнёт принимать подключения, иначе тест сразу после запуска падает.
+for ($attempt = 0; $attempt -lt 50; $attempt++) {
+    if (Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue) {
+        break
+    }
+    Start-Sleep -Milliseconds 100
+}
 Write-Output 'UniMarket: http://127.0.0.1:8000'

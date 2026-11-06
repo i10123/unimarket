@@ -1,11 +1,3 @@
-.katalog__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding-block: 12px;
-}
-
 .katalog {
   display: flex;
   flex-direction: column;

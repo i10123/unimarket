@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(254) NOT NULL UNIQUE,
+    -- Логин: 3–32 символа, латиница в нижнем регистре, цифры, _ . - (проверяет PHP).
+    -- Он же показывается как имя продавца.
+    login VARCHAR(32) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    display_name VARCHAR(80) NULL,
     course TINYINT UNSIGNED NULL CHECK (course BETWEEN 1 AND 6),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

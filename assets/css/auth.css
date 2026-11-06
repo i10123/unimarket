@@ -1,11 +1,3 @@
-.dostup-header {
-  padding-block: 12px;
-}
-
-.dostup-header .container {
-  display: flex;
-}
-
 .dostup {
   display: flex;
   flex-direction: column;
@@ -48,10 +40,6 @@ html:not([data-ekran]) .dostup__ekran--vhod,
   background: var(--poverhnost);
   font-size: 14px;
   font-weight: 600;
-}
-
-.dostup__forma h2 {
-  font-size: 18px;
 }
 
 .dostup__forma a,
@@ -144,16 +132,8 @@ html:not([data-ekran]) .dostup__ekran--vhod,
 }
 
 .dostup__status {
-  padding: 12px;
-  border-radius: 8px;
-  background: var(--green-fon);
-  font-weight: 400;
-}
-
-.dostup__status--oshibka {
-  padding: 0;
-  background: none;
   color: var(--oshibka);
+  font-weight: 400;
 }
 
 .dostup .button:disabled {

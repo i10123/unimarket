@@ -80,9 +80,13 @@ img {
   background: var(--poverhnost);
 }
 
-.site-header .brand img {
-  width: 64px;
-  height: 64px;
+/* Общая строка шапки: логотип слева, действия справа. */
+.site-header__vnutri {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 12px;
 }
 
 .brand {

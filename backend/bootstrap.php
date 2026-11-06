@@ -1,8 +1,11 @@
 <?php
 declare(strict_types=1);
 
+// Общие функции backend: подключение к БД, сессия, текущий пользователь, JSON-ответ.
+
 const ROOT = __DIR__ . '/..';
 
+// Одно подключение PDO на запрос (static сохраняет его между вызовами).
 function db(): PDO
 {
     static $pdo;
@@ -34,15 +37,28 @@ function startSession(): void
     $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 }
 
+// Вошедший пользователь с остатками кошелька или null для гостя.
 function currentUser(): ?array
 {
-    if (!isset($_SESSION['user_id'])) return null;
-    $query = db()->prepare('SELECT u.id, u.email, w.available, w.reserved
-        FROM users u JOIN wallets w ON w.user_id = u.id WHERE u.id = ?');
+    if (!isset($_SESSION['user_id'])) {
+        return null;
+    }
+
+    $query = db()->prepare(
+        'SELECT u.id, u.login, w.available, w.reserved
+        FROM users u
+        JOIN wallets w ON w.user_id = u.id
+        WHERE u.id = ?'
+    );
     $query->execute([$_SESSION['user_id']]);
     $user = $query->fetch();
-    if (!$user) unset($_SESSION['user_id']);
-    return $user ?: null;
+
+    // Аккаунт удалён из БД — сессия больше не действительна.
+    if (!$user) {
+        unset($_SESSION['user_id']);
+        return null;
+    }
+    return $user;
 }
 
 function respond(array $data, int $status = 200): never
@@ -54,19 +70,31 @@ function respond(array $data, int $status = 200): never
     exit;
 }
 
-// Ограничение по IP сохраняется на сервере и не сбрасывается удалением cookie.
+const AUTH_ATTEMPTS = 20;
+const AUTH_WINDOW_SECONDS = 15 * 60;
+
+// Не больше 20 попыток входа/регистрации за 15 минут с одного IP.
+// Счётчик хранится в файле на сервере, поэтому удаление cookie его не сбрасывает.
 function checkAuthLimit(): void
 {
     $path = ROOT . '/storage/limits/' . hash('sha256', $_SERVER['REMOTE_ADDR']) . '.json';
     $file = fopen($path, 'c+');
-    if (!$file || !flock($file, LOCK_EX)) throw new RuntimeException('Не удалось проверить лимит');
-    $limit = json_decode(stream_get_contents($file), true) ?: ['until' => time() + 900, 'count' => 0];
-    if ($limit['until'] <= time()) $limit = ['until' => time() + 900, 'count' => 0];
-    if ($limit['count'] >= 20) {
+    // Блокировка файла: два одновременных запроса не потеряют попытку.
+    if (!$file || !flock($file, LOCK_EX)) {
+        throw new RuntimeException('Не удалось проверить лимит');
+    }
+
+    $limit = json_decode(stream_get_contents($file), true);
+    if (!$limit || $limit['until'] <= time()) {
+        $limit = ['until' => time() + AUTH_WINDOW_SECONDS, 'count' => 0];
+    }
+
+    if ($limit['count'] >= AUTH_ATTEMPTS) {
         fclose($file);
         header('Retry-After: ' . ($limit['until'] - time()));
         respond(['error' => 'Слишком много попыток. Попробуй через 15 минут.'], 429);
     }
+
     $limit['count']++;
     rewind($file);
     ftruncate($file, 0);

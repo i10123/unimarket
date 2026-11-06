@@ -1,17 +1,6 @@
-.site-header__vnutri,
 .site-header__actions {
   display: flex;
   align-items: center;
-}
-
-.site-header__vnutri {
-  position: relative;
-  justify-content: space-between;
-  gap: 24px;
-  padding-block: 12px;
-}
-
-.site-header__actions {
   gap: 24px;
 }
 
@@ -52,7 +41,7 @@
 
 .welcome__content,
 .welcome__nagrada,
-.zayavka-banner__content {
+.publikaciya-banner__content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -179,7 +168,7 @@
   line-height: 22px;
 }
 
-.zayavka-banner {
+.publikaciya-banner {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 260px;
   align-items: center;
@@ -190,11 +179,11 @@
   background: var(--green-fon);
 }
 
-.zayavka-banner__content {
+.publikaciya-banner__content {
   gap: 4px;
 }
 
-.zayavka-banner h2 {
+.publikaciya-banner h2 {
   font-size: 18px;
 }
 
@@ -310,7 +299,6 @@
 
   .site-header__vnutri {
     gap: 16px;
-    padding-block: 12px;
   }
 
   .landing,
@@ -318,7 +306,7 @@
   .faq,
   .welcome,
   .material-grid,
-  .zayavka-banner,
+  .publikaciya-banner,
   .site-footer__vnutri {
     display: flex;
     flex-direction: column;
@@ -329,7 +317,7 @@
   }
 
   .welcome,
-  .zayavka-banner {
+  .publikaciya-banner {
     align-items: stretch;
     gap: 16px;
     padding: 20px;
@@ -341,7 +329,7 @@
   }
 
   .welcome .button,
-  .zayavka-banner .button {
+  .publikaciya-banner .button {
     width: 100%;
     min-width: 0;
     max-width: 280px;
@@ -393,10 +381,7 @@
     padding-top: 10px;
   }
 
-  .faq__item summary {
-    padding-inline: 16px;
-  }
-
+  .faq__item summary,
   .faq__item p {
     padding-inline: 16px;
   }
