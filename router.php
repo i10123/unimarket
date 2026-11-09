@@ -12,6 +12,7 @@ const PAGES = [
     '/' => '/index.html',
     '/index.html' => '/index.html',
     LOGIN_PAGE => LOGIN_PAGE,
+    '/pages/auth/recovery.html' => '/pages/auth/recovery.html',
     CATALOG_PAGE => CATALOG_PAGE,
 ];
 
@@ -26,12 +27,12 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-sr
 
 if ($path === '/api/auth') {
     require __DIR__ . '/backend/auth.php';
-    return true;
+    exit;
 }
 
 if (isset(PAGES[$path])) {
     servePage($path);
-    return true;
+    exit;
 }
 
 http_response_code(404);

@@ -1,24 +1,83 @@
+/* Шрифты локальные: политика безопасности запрещает внешние. Кириллица и латиница в разных файлах. */
 @font-face {
-  font-family: Manrope;
-  src: url("../fonts/Manrope-Variable.ttf") format("truetype");
-  font-weight: 200 800;
-  font-style: normal;
+  font-family: Rubik;
+  src: url("../fonts/rubik-cyrillic-500-normal.woff2") format("woff2");
+  font-weight: 500;
   font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: Rubik;
+  src: url("../fonts/rubik-latin-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212;
+}
+
+@font-face {
+  font-family: Onest;
+  src: url("../fonts/onest-cyrillic-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: Onest;
+  src: url("../fonts/onest-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212;
+}
+
+@font-face {
+  font-family: Onest;
+  src: url("../fonts/onest-cyrillic-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: Onest;
+  src: url("../fonts/onest-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212;
+}
+
+@font-face {
+  font-family: "Golos Text";
+  src: url("../fonts/golos-text-cyrillic-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: "Golos Text";
+  src: url("../fonts/golos-text-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212;
 }
 
 :root {
+  --shrift-kartochka: "Golos Text", Arial, sans-serif;
+  --shrift-tekst: Onest, Arial, sans-serif;
+  --shrift-zagolovok: Rubik, Arial, sans-serif;
   --fon: #f5f6f1;
   --poverhnost: #fff;
   --tekst: #19221c;
   --tekst-vtorichniy: #677069;
   --granica: #e0e5db;
-  --akcent: #d3f36a;
-  --akcent-navedeniye: #c0e64f;
+  --akcent: #caf24c;
+  --akcent-navedeniye: #b6e233;
   --temniy: #202c23;
-  --green-fon: #eef5d9;
-  --blue-fon: #dfecf5;
-  --lavandoviy-fon: #ebe5f7;
-  --razdelitel: #858585;
+  --green-fon: #e4f0bf;
+  --blue-fon: #cfe3f5;
+  --lavandoviy-fon: #e0d6f7;
   --oshibka: #b42318;
 }
 
@@ -36,7 +95,7 @@ body {
   margin: 0;
   background: var(--fon);
   color: var(--tekst);
-  font: 400 15px/1.4 Manrope, Arial, sans-serif;
+  font: 400 15px/1.4 var(--shrift-tekst);
 }
 
 h1,
@@ -46,14 +105,20 @@ p {
   margin: 0;
 }
 
+h1,
+h2,
+h3,
+.brand {
+  font-family: var(--shrift-zagolovok);
+  font-weight: 500;
+}
+
 h1 {
   font-size: 44px;
-  font-weight: 800;
 }
 
 h2 {
   font-size: 24px;
-  font-weight: 700;
 }
 
 a {
@@ -95,7 +160,6 @@ img {
   flex-shrink: 0;
   gap: 8px;
   font-size: 24px;
-  font-weight: 700;
 }
 
 .button {
@@ -111,7 +175,11 @@ img {
   font-weight: 600;
   text-align: center;
   cursor: pointer;
-  transition: background-color 150ms, border-color 150ms;
+  transition: background-color 150ms, border-color 150ms, transform 100ms;
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .button--main {
@@ -124,9 +192,19 @@ img {
   background: var(--poverhnost);
 }
 
+/* Для светло-зелёных блоков: салатовая кнопка на них сливается с фоном. */
+.button--temniy {
+  background: var(--temniy);
+  color: var(--poverhnost);
+}
+
 @media (hover: hover) {
   .button--main:hover {
     background: var(--akcent-navedeniye);
+  }
+
+  .button--temniy:hover {
+    background: var(--tekst);
   }
 
   .button--secondary:hover {

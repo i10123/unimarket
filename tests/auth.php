@@ -72,6 +72,12 @@ $userId = null;
 try {
     setLimit($limitPath, 0);
 
+    // Имя для показа: все случаи заполнения имени и фамилии.
+    check(displayName(['id' => 22, 'first_name' => 'Анна', 'last_name' => 'Кузнецова']) === 'Анна Кузнецова', 'Имя и фамилия');
+    check(displayName(['id' => 22, 'first_name' => 'Анна', 'last_name' => null]) === 'Анна', 'Только имя');
+    check(displayName(['id' => 22, 'first_name' => null, 'last_name' => 'Кузнецова']) === 'Кузнецова', 'Только фамилия');
+    check(displayName(['id' => 22, 'first_name' => null, 'last_name' => null]) === 'User22', 'Без имени и фамилии');
+
     // Гость и закрытые файлы.
     check(status('/pages/catalog.html') === 302, 'Гость получил закрытую страницу');
     $closedPaths = [
@@ -92,18 +98,32 @@ try {
     $csrf = $session['csrf'];
 
     // Проверки полей и CSRF.
-    $body = ['action' => 'register', 'login' => $login, 'password' => $password];
+    $body = ['action' => 'register', 'login' => $login, 'password' => $password, 'rules' => true];
     check(status('/api/auth', $body) === 403, 'Нет защиты CSRF');
     check(status('/api/auth', ['login' => 'a b'] + $body, $csrf) === 422, 'Нет проверки логина');
     check(status('/api/auth', ['login' => 'ab'] + $body, $csrf) === 422, 'Разрешён слишком короткий логин');
     check(status('/api/auth', ['password' => '123'] + $body, $csrf) === 422, 'Нет проверки пароля');
+    check(status('/api/auth', ['rules' => false] + $body, $csrf) === 422, 'Правила не обязательны');
+    check(status('/api/auth', ['email' => 'нет-почты'] + $body, $csrf) === 422, 'Нет проверки почты');
+    check(status('/api/auth', ['course' => '7'] + $body, $csrf) === 422, 'Нет проверки курса');
+    check(status('/api/auth', ['first_name' => '<b>'] + $body, $csrf) === 422, 'Нет проверки имени');
+
+    // Первый шаг только проверяет логин и не создаёт аккаунт.
+    $checkLogin = ['action' => 'check_login', 'login' => $login];
+    check(status('/api/auth', $checkLogin, $csrf) === 200, 'Свободный логин отклонён');
+    check(status('/api/auth', ['login' => 'a b'] + $checkLogin, $csrf) === 422, 'Проверка логина пропустила формат');
+    $query = db()->prepare('SELECT COUNT(*) FROM users WHERE login = ?');
+    $query->execute([$login]);
+    check((int) $query->fetchColumn() === 0, 'Первый шаг создал аккаунт');
 
     // Регистрация.
-    [$code, $registered] = request('/api/auth', $body, $csrf);
+    $profile = ['first_name' => 'Анна', 'last_name' => 'Кузнецова', 'email' => '', 'course' => '2'];
+    [$code, $registered] = request('/api/auth', $body + $profile, $csrf);
     check($code === 201, 'Регистрация не выполнена');
     $userId = $registered['user']['id'];
     $user = $registered['user'];
-    check((int) $user['available'] === 0 && (int) $user['reserved'] === 0, 'Начальный баланс не равен нулю');
+    check((int) $user['available'] === 100 && (int) $user['reserved'] === 0, 'Приветственный бонус не начислен');
+    check($user['display_name'] === 'Анна Кузнецова', 'API не вернул имя для показа');
     check($registered['csrf'] !== $csrf, 'Токен после входа не сменился');
     $csrf = $registered['csrf'];
 
@@ -114,6 +134,20 @@ try {
     $query->execute([$userId]);
     $hash = $query->fetchColumn();
     check($hash !== $password && password_verify($password, $hash), 'Пароль не защищён хешем');
+
+    $query = db()->prepare("SELECT available_delta FROM point_entries WHERE user_id = ? AND kind = 'welcome'");
+    $query->execute([$userId]);
+    check($query->fetchAll(PDO::FETCH_COLUMN) === [100], 'Бонус не записан в историю баллов');
+
+    check(status('/api/auth', $checkLogin, $csrf) === 409, 'Занятый логин не обнаружен');
+
+    $query = db()->prepare('SELECT first_name, last_name, email, course FROM users WHERE id = ?');
+    $query->execute([$userId]);
+    $saved = $query->fetch();
+    check(
+        $saved === ['first_name' => 'Анна', 'last_name' => 'Кузнецова', 'email' => null, 'course' => 2],
+        'Профиль сохранён неверно'
+    );
 
     $sameLogin = ['login' => strtoupper($login)] + $body;
     check(status('/api/auth', $sameLogin, $csrf) === 409, 'Повторный логин разрешён');
@@ -144,10 +178,11 @@ try {
     check(status('/api/auth', $loginBody, freshCsrf()) === 429, 'Лимит попыток не работает');
     check(status('/api/auth', null, null, 'DELETE') === 405, 'Неизвестный метод принят');
 
-    echo "OK: регистрация, нулевой кошелёк, хеш, повторный логин, вход/выход, CSRF, "
+    echo "OK: регистрация, профиль, приветственный бонус, хеш, повторный логин, вход/выход, CSRF, "
         . "права доступа, SQL-параметры, лимит, 7 таблиц и CHECK баланса.\n";
 } finally {
     if ($userId !== null) {
+        db()->prepare('DELETE FROM point_entries WHERE user_id = ?')->execute([$userId]);
         db()->prepare('DELETE FROM wallets WHERE user_id = ?')->execute([$userId]);
         db()->prepare('DELETE FROM users WHERE id = ? AND login = ?')->execute([$userId, $login]);
     }

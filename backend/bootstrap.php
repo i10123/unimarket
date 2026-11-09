@@ -48,6 +48,13 @@ function startSession(): void
     $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 }
 
+// Имя для показа другим: то, что заполнено из имени и фамилии, иначе «User22».
+function displayName(array $user): string
+{
+    $name = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
+    return $name !== '' ? $name : 'User' . $user['id'];
+}
+
 // Вошедший пользователь с остатками кошелька или null для гостя.
 function currentUser(): ?array
 {
@@ -56,7 +63,7 @@ function currentUser(): ?array
     }
 
     $query = db()->prepare(
-        'SELECT u.id, u.login, w.available, w.reserved
+        'SELECT u.id, u.login, u.first_name, u.last_name, w.available, w.reserved
         FROM users u
         JOIN wallets w ON w.user_id = u.id
         WHERE u.id = ?'
@@ -69,6 +76,7 @@ function currentUser(): ?array
         unset($_SESSION['user_id']);
         return null;
     }
+    $user['display_name'] = displayName($user);
     return $user;
 }
 

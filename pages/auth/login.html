@@ -23,15 +23,16 @@
   <main class="dostup container">
     <section class="dostup__ekran dostup__ekran--vhod" id="vhod" aria-labelledby="vhod-title">
       <h1 id="vhod-title">С возвращением</h1>
-      <form class="dostup__forma" method="post" data-action="login" aria-labelledby="vhod-title">
-        <label class="pole" for="vhod-login">
-          <span>Логин</span>
-          <input id="vhod-login" name="login" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="32" required>
-        </label>
+      <form class="dostup__forma" method="post" data-action="login" aria-labelledby="vhod-kartochka" novalidate>
+        <h2 class="dostup__zagolovok" id="vhod-kartochka">Вход</h2>
         <div class="pole">
-          <label for="vhod-parol">Пароль</label>
+          <label for="vhod-login">Логин <span class="pole__zvezda" aria-hidden="true">*</span></label>
+          <input id="vhod-login" name="login" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="32" required data-pusto="Введи логин.">
+        </div>
+        <div class="pole">
+          <label for="vhod-parol">Пароль <span class="pole__zvezda" aria-hidden="true">*</span></label>
           <div class="pole__parol">
-            <input id="vhod-parol" name="password" type="password" autocomplete="current-password" minlength="8" required>
+            <input id="vhod-parol" name="password" type="password" autocomplete="current-password" minlength="8" required data-pusto="Введи пароль." data-format="Пароль — не короче 8 символов.">
             <button class="pole__pokaz" type="button" aria-label="Показать пароль" aria-controls="vhod-parol" aria-pressed="false" data-parol>
               <img src="../../assets/icons/eye.svg" width="20" height="20" alt="">
             </button>
@@ -39,40 +40,91 @@
         </div>
         <button class="button button--main" type="submit" disabled>Войти</button>
         <p class="dostup__status" role="status" hidden></p>
+        <p><a href="recovery.html">Восстановить доступ</a></p>
         <p>Нет аккаунта? <a href="#registraciya">Зарегистрироваться</a></p>
       </form>
     </section>
     <section class="dostup__ekran" id="registraciya" aria-labelledby="registraciya-title">
-      <div class="dostup__privetstvie">
-        <h1 id="registraciya-title">Добро пожаловать в УниМаркет</h1>
-        <p>Создай аккаунт, чтобы обмениваться учебными материалами.</p>
-      </div>
-      <form class="dostup__forma" method="post" data-action="register" aria-labelledby="registraciya-title">
-        <div class="pole">
-          <label for="registraciya-login">Логин</label>
-          <input id="registraciya-login" name="login" type="text" placeholder="student_2026" autocomplete="username" autocapitalize="none" spellcheck="false" minlength="3" maxlength="32" pattern="[A-Za-z0-9_.\-]{3,32}" aria-describedby="login-podskazka" required>
-          <small id="login-podskazka">3–32 символа: латиница, цифры, _ . - Логин виден другим как имя продавца.</small>
+      <h1 id="registraciya-title">Добро пожаловать в УниМаркет</h1>
+      <form class="dostup__forma" id="shag-dostup" method="post" data-action="check_login" aria-labelledby="shag-dostup-title" novalidate>
+        <div class="dostup__progress" aria-hidden="true"><span class="dostup__progress-chast--aktiv"></span><span></span></div>
+        <div class="dostup__shapka">
+          <h2 class="dostup__zagolovok" id="shag-dostup-title">Данные для входа</h2>
+          <p class="dostup__shag">Шаг 1 из 2</p>
         </div>
         <div class="pole">
-          <label for="registraciya-parol">Пароль</label>
+          <label for="registraciya-login">Логин <span class="pole__zvezda" aria-hidden="true">*</span></label>
+          <input id="registraciya-login" name="login" type="text" placeholder="ivanov_ii_2026" autocomplete="username" autocapitalize="none" spellcheck="false" minlength="3" maxlength="32" pattern="[A-Za-z0-9_.\-]{3,32}" aria-describedby="login-podskazka" required data-pusto="Придумай логин." data-format="Логин не подходит: нужно от 3 до 32 символов, только латинские буквы, цифры, точка, дефис и подчёркивание.">
+          <small id="login-podskazka">От 3 до 32 символов: латинские буквы, цифры, точка, дефис и подчёркивание</small>
+        </div>
+        <div class="pole">
+          <label for="registraciya-parol">Пароль <span class="pole__zvezda" aria-hidden="true">*</span></label>
           <div class="pole__parol">
-            <input id="registraciya-parol" name="password" type="password" placeholder="Не менее 8 символов" autocomplete="new-password" minlength="8" aria-describedby="parol-podskazka" required>
+            <input id="registraciya-parol" name="password" type="password" placeholder="Не менее 8 символов" autocomplete="new-password" minlength="8" required data-pusto="Придумай пароль." data-format="Пароль — не короче 8 символов.">
             <button class="pole__pokaz" type="button" aria-label="Показать пароль" aria-controls="registraciya-parol" aria-pressed="false" data-parol>
               <img src="../../assets/icons/eye.svg" width="20" height="20" alt="">
             </button>
           </div>
-          <small id="parol-podskazka">От 8 символов. Сохрани пароль: восстановления нет.</small>
         </div>
-        <button class="button button--main" type="submit" disabled>Создать аккаунт</button>
+        <div class="pole">
+          <label for="registraciya-povtor">Повтори пароль <span class="pole__zvezda" aria-hidden="true">*</span></label>
+          <div class="pole__parol">
+            <input id="registraciya-povtor" name="repeat" type="password" autocomplete="new-password" required data-pusto="Повтори пароль.">
+            <button class="pole__pokaz" type="button" aria-label="Показать пароль" aria-controls="registraciya-povtor" aria-pressed="false" data-parol>
+              <img src="../../assets/icons/eye.svg" width="20" height="20" alt="">
+            </button>
+          </div>
+        </div>
+        <div class="pole">
+          <div class="pole__soglasie">
+            <input id="registraciya-pravila" name="rules" type="checkbox" required data-pusto="Чтобы продолжить, прими правила.">
+            <label for="registraciya-pravila">Принимаю <a href="../../index.html#faq-title">правила обмена материалами</a> <span class="pole__zvezda" aria-hidden="true">*</span></label>
+          </div>
+        </div>
+        <button class="button button--main" type="submit" disabled>Продолжить</button>
         <p class="dostup__status" role="status" hidden></p>
         <p>Уже есть аккаунт? <a href="#vhod">Войти</a></p>
+      </form>
+      <form class="dostup__forma" id="shag-profil" method="post" data-action="register" aria-labelledby="shag-profil-title" novalidate>
+        <div class="dostup__progress" aria-hidden="true"><span class="dostup__progress-chast--aktiv"></span><span class="dostup__progress-chast--aktiv"></span></div>
+        <a class="dostup__nazad" href="#registraciya">← Назад к шагу 1</a>
+        <div class="dostup__shapka">
+          <h2 class="dostup__zagolovok" id="shag-profil-title">Расскажи о себе</h2>
+          <p class="dostup__shag">Шаг 2 из 2</p>
+        </div>
+        <div class="pole">
+          <label for="profil-imya">Имя</label>
+          <input id="profil-imya" name="first_name" type="text" placeholder="Как к тебе обращаться" autocomplete="given-name" maxlength="60" pattern="\p{L}[\p{L} '\-]*" data-format="Только буквы, пробел, дефис и апостроф.">
+        </div>
+        <div class="pole">
+          <label for="profil-familiya">Фамилия</label>
+          <input id="profil-familiya" name="last_name" type="text" placeholder="Твоя фамилия" autocomplete="family-name" maxlength="60" pattern="\p{L}[\p{L} '\-]*" data-format="Только буквы, пробел, дефис и апостроф.">
+        </div>
+        <div class="pole">
+          <label for="profil-kurs">Курс</label>
+          <select id="profil-kurs" name="course">
+            <option value="">Выбери курс</option>
+            <option value="1">1 курс</option>
+            <option value="2">2 курс</option>
+            <option value="3">3 курс</option>
+            <option value="4">4 курс</option>
+            <option value="5">5 курс</option>
+            <option value="6">6 курс</option>
+          </select>
+        </div>
+        <div class="pole">
+          <label for="profil-email">Email</label>
+          <input id="profil-email" name="email" type="email" placeholder="student@example.edu" autocomplete="email" maxlength="255" data-format="Проверь адрес почты.">
+        </div>
+        <button class="button button--secondary" id="propustit" type="button" disabled>Пропустить</button>
+        <button class="button button--main" type="submit" disabled>Создать аккаунт</button>
+        <p class="dostup__status" role="status" hidden></p>
       </form>
     </section>
     <nav class="dostup__nav" aria-label="Полезные ссылки">
       <a href="../../index.html#faq-title">Помощь и правила</a>
       <a href="../../index.html">На главную</a>
     </nav>
-    <p class="dostup__primechanie">Запомни логин и пароль: восстановить их через сайт нельзя.</p>
     <noscript><p class="dostup__primechanie">Для регистрации и входа включи JavaScript.</p></noscript>
   </main>
 </body>

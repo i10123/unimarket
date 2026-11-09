@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 // API доступа: /api/auth
 //   GET  — текущий пользователь (или null) и CSRF-токен;
-//   POST — действие login, register или logout в JSON-теле.
+//   POST — действие login, check_login, register или logout в JSON-теле.
 
 require __DIR__ . '/bootstrap.php';
 require __DIR__ . '/AuthHandler.php';
@@ -34,7 +34,7 @@ try {
         renewSession();
         respond(['ok' => true]);
     }
-    if ($action !== 'login' && $action !== 'register') {
+    if (!in_array($action, ['login', 'check_login', 'register'], true)) {
         respond(['error' => 'Неизвестное действие.'], 400);
     }
 
@@ -44,15 +44,28 @@ try {
     $login = is_string($input['login'] ?? null) ? strtolower(trim($input['login'])) : '';
     $password = $input['password'] ?? null;
     if (!isValidLogin($login)) {
-        respond(['error' => 'Логин: от 3 до 32 символов — латинские буквы, цифры, _ . -'], 422);
-    }
-    if (!isValidPassword($password)) {
-        respond(['error' => 'Пароль: от 8 символов, не более 256 байт.'], 422);
+        respond(['error' => 'Логин не подходит: нужно от 3 до 32 символов, только латинские буквы, цифры, точка, дефис и подчёркивание.'], 422);
     }
 
     $auth = new AuthHandler(db());
+
+    // Первый шаг регистрации: аккаунт ещё не создаётся, только проверяем логин.
+    if ($action === 'check_login') {
+        if ($auth->loginExists($login)) {
+            respond(['error' => 'Этот логин уже занят.'], 409);
+        }
+        respond(['ok' => true]);
+    }
+
+    if (!isValidPassword($password)) {
+        respond(['error' => 'Пароль: от 8 символов, не более 256 байт.'], 422);
+    }
+    if ($action === 'register' && ($input['rules'] ?? false) !== true) {
+        respond(['error' => 'Нужно принять правила обмена материалами.'], 422);
+    }
+
     if ($action === 'register') {
-        $userId = $auth->register($login, $password);
+        $userId = $auth->register($login, $password, readProfile($input));
     } else {
         $userId = $auth->login($login, $password);
     }
@@ -79,6 +92,43 @@ try {
 } catch (Throwable $error) {
     error_log((string) $error);
     respond(['error' => 'Не удалось выполнить действие. Попробуй позже.'], 500);
+}
+
+// Второй шаг регистрации: все поля необязательны, пустое значение сохраняется как NULL.
+function readProfile(array $input): array
+{
+    $firstName = cleanText($input['first_name'] ?? '');
+    $lastName = cleanText($input['last_name'] ?? '');
+    $email = cleanText($input['email'] ?? '');
+    $course = cleanText($input['course'] ?? '');
+
+    if (!isValidName($firstName) || !isValidName($lastName)) {
+        respond(['error' => 'Имя и фамилия: до 60 букв.'], 422);
+    }
+    if ($email !== null && (strlen($email) > 255 || !filter_var($email, FILTER_VALIDATE_EMAIL))) {
+        respond(['error' => 'Проверь адрес почты.'], 422);
+    }
+    if ($course !== null && preg_match('/^[1-6]$/D', $course) !== 1) {
+        respond(['error' => 'Курс: от 1 до 6.'], 422);
+    }
+
+    return [
+        'first_name' => $firstName,
+        'last_name' => $lastName,
+        'email' => $email,
+        'course' => $course === null ? null : (int) $course,
+    ];
+}
+
+function cleanText(mixed $value): ?string
+{
+    $text = is_string($value) ? trim($value) : '';
+    return $text === '' ? null : $text;
+}
+
+function isValidName(?string $name): bool
+{
+    return $name === null || preg_match("/^[\p{L}][\p{L} '-]{0,59}$/uD", $name) === 1;
 }
 
 function readJsonBody(): array

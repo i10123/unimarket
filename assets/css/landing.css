@@ -32,6 +32,7 @@
 .welcome {
   display: grid;
   grid-template-columns: minmax(0, 850px) 310px;
+  justify-content: space-between;
   gap: 24px;
   padding: 32px;
   border-radius: 16px;
@@ -51,7 +52,6 @@
 
 .welcome h2 {
   font-size: 32px;
-  font-weight: 800;
 }
 
 .welcome .button {
@@ -60,24 +60,22 @@
 
 .welcome__nagrada {
   align-items: center;
-  gap: 8px;
-  align-self: start;
-  padding: 24px;
-  border-radius: 16px;
+  gap: 6px;
+  align-self: center;
+  padding: 20px 24px;
+  border-radius: 20px;
   background: var(--akcent);
   color: var(--tekst);
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 600;
   text-align: center;
 }
 
-.welcome__points span {
-  font-size: 20px;
-}
-
 .welcome__points {
-  font-size: 44px;
-  font-weight: 800;
-  white-space: nowrap;
+  font-family: var(--shrift-zagolovok);
+  font-size: 64px;
+  font-weight: 500;
+  line-height: 1;
 }
 
 .material-grid {
@@ -87,24 +85,28 @@
 }
 
 .material-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
   min-height: 228px;
   gap: 12px;
-  padding: 16px;
-  border-radius: 16px;
+  padding: 18px;
+  border-radius: 20px;
 }
 
 .material-card--green {
+  --metka: #c7e083;
   background: var(--green-fon);
 }
 
 .material-card--blue {
+  --metka: #a9cdee;
   background: var(--blue-fon);
 }
 
 .material-card--lavandoviy {
+  --metka: #c5b3ef;
   background: var(--lavandoviy-fon);
 }
 
@@ -121,7 +123,45 @@
   font-size: 12px;
 }
 
+.material-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Тип — плашка насыщеннее фона карточки, курс — полупрозрачная. */
+.material-card__meta span {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 65%);
+  font-weight: 600;
+}
+
+.material-card__meta span:first-child {
+  background: var(--metka);
+}
+
+/* Ссылка растянута на всю карточку, поэтому нажимается любое её место. */
+.material-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+}
+
+.material-card__link:focus-visible {
+  outline: none;
+}
+
+.material-card__link:focus-visible::after {
+  outline: 2px solid var(--tekst);
+  outline-offset: 2px;
+}
+
+/* Сердце лежит выше ссылки: нажатие на него никуда не ведёт. */
 .material-card__save {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -150,12 +190,9 @@
 
 .material-card__content p,
 .material-card__author {
-  color: var(--tekst-vtorichniy);
-}
-
-.material-card__niz {
-  padding-top: 12px;
-  border-top: 1px solid var(--razdelitel);
+  /* Полупрозрачный тёмный остаётся читаемым на всех цветах карточек. */
+  color: rgb(25 34 28 / 72%);
+  font-family: var(--shrift-kartochka);
 }
 
 .material-card__price {
@@ -164,7 +201,7 @@
   border-radius: 8px;
   background: rgb(255 255 255 / 55%);
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 22px;
 }
 
@@ -210,7 +247,7 @@
   gap: 16px;
   padding: 16px 24px;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   list-style: none;
   cursor: pointer;
 }
@@ -283,8 +320,12 @@
   }
 }
 
+/* Три раскладки: ноутбук (от 1200px) — базовые правила выше,
+   планшет (768–1199.98px) и телефон (до 767.98px) — media-запросы ниже.
+   Дробная граница нужна, чтобы при масштабе браузера не было ширины без правил. */
+
 /* Планшет: две колонки, раскладка остаётся Grid. */
-@media (max-width: 1199px) {
+@media (max-width: 1199.98px) {
   .material-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -295,10 +336,6 @@
   h1 {
     font-size: clamp(28px, 8vw, 36px);
     line-height: 1.2;
-  }
-
-  .site-header__vnutri {
-    gap: 16px;
   }
 
   .landing,
@@ -332,7 +369,6 @@
   .publikaciya-banner .button {
     width: 100%;
     min-width: 0;
-    max-width: 280px;
   }
 
   .welcome__nagrada {
@@ -342,7 +378,7 @@
   }
 
   .welcome__points {
-    font-size: 32px;
+    font-size: 48px;
   }
 
   .materials h2,
@@ -351,7 +387,6 @@
   }
 
   .material-card {
-    position: relative;
     min-height: 0;
   }
 
@@ -377,10 +412,6 @@
     line-height: 26px;
   }
 
-  .material-card__niz {
-    padding-top: 10px;
-  }
-
   .faq__item summary,
   .faq__item p {
     padding-inline: 16px;
@@ -395,10 +426,8 @@
   .site-footer__nav {
     justify-content: center;
   }
-}
 
-/* На узком экране ссылки остаются доступны через понятные иконки. */
-@media (max-width: 599.98px) {
+  /* В шапке вместо текста иконки входа и регистрации. */
   .site-header__vnutri,
   .site-header__actions {
     gap: 8px;
@@ -418,41 +447,5 @@
     min-width: 0;
     min-height: 44px;
     padding: 0;
-  }
-
-  .welcome .button {
-    max-width: none;
-  }
-}
-
-/* Широкий телефон: две карточки в ряд, раскладка всё ещё Flexbox. */
-@media (min-width: 600px) and (max-width: 767.98px) {
-  .site-footer__vnutri {
-    flex-direction: row;
-    justify-content: space-between;
-    text-align: left;
-  }
-
-  .material-grid {
-    flex-flow: row wrap;
-  }
-
-  .material-card {
-    flex: 1 1 calc(50% - 8px);
-  }
-
-  .welcome {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .welcome__content {
-    flex: 1;
-  }
-
-  .welcome__nagrada {
-    flex: 0 0 210px;
-    width: auto;
-    align-self: center;
   }
 }

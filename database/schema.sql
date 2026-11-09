@@ -1,9 +1,12 @@
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     -- Логин: 3–32 символа, латиница в нижнем регистре, цифры, _ . - (проверяет PHP).
-    -- Он же показывается как имя продавца.
     login VARCHAR(32) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
+    -- Необязательны. Другим показывается то, что заполнено, иначе «User22». Письма не отправляются.
+    first_name VARCHAR(60) NULL,
+    last_name VARCHAR(60) NULL,
+    email VARCHAR(255) NULL,
     course TINYINT UNSIGNED NULL CHECK (course BETWEEN 1 AND 6),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -82,13 +85,15 @@ CREATE TABLE IF NOT EXISTS point_entries (
     user_id BIGINT UNSIGNED NOT NULL,
     purchase_id BIGINT UNSIGNED NULL,
     material_id BIGINT UNSIGNED NULL,
-    kind ENUM('reward', 'reserve', 'release', 'refund') NOT NULL,
+    -- welcome — бонус при регистрации, reward — награда за бесплатный материал.
+    kind ENUM('welcome', 'reward', 'reserve', 'release', 'refund') NOT NULL,
     available_delta BIGINT NOT NULL,
     reserved_delta BIGINT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CHECK (available_delta <> 0 OR reserved_delta <> 0),
-    CHECK ((kind = 'reward' AND material_id IS NOT NULL AND purchase_id IS NULL)
-        OR (kind <> 'reward' AND purchase_id IS NOT NULL AND material_id IS NULL)),
+    CHECK ((kind = 'welcome' AND material_id IS NULL AND purchase_id IS NULL)
+        OR (kind = 'reward' AND material_id IS NOT NULL AND purchase_id IS NULL)
+        OR (kind IN ('reserve', 'release', 'refund') AND purchase_id IS NOT NULL AND material_id IS NULL)),
     FOREIGN KEY (user_id) REFERENCES wallets(user_id),
     FOREIGN KEY (purchase_id) REFERENCES purchases(id),
     FOREIGN KEY (material_id) REFERENCES materials(id),

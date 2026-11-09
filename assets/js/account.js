@@ -1,9 +1,15 @@
-// Каталог: показывает логин и остатки вошедшего пользователя, кнопка «Выйти».
+// Каталог: показывает имя, логин и остатки вошедшего пользователя, кнопка «Выйти».
 
 const soobshenie = document.getElementById("status");
 const vyitiButton = document.getElementById("viyti");
 
+// Обычный Error создаём сами из ответа сервера; у сбоя сети текст английский.
+function tekstOshibki(error, zapasnoy) {
+  return (error.name === "Error" && error.message) || zapasnoy;
+}
+
 function pokazatAkkaunt(user) {
+  document.getElementById("imya").textContent = user.display_name;
   document.getElementById("login").textContent = user.login;
   document.getElementById("balance").textContent = user.available;
   document.getElementById("reserve").textContent = user.reserved;
@@ -26,7 +32,7 @@ async function vyiti(csrf) {
     }
     location.replace("/pages/auth/login.html");
   } catch (error) {
-    soobshenie.textContent = error.message || "Не удалось выйти. Попробуй снова.";
+    soobshenie.textContent = tekstOshibki(error, "Не удалось выйти. Попробуй снова.");
     vyitiButton.disabled = false;
   }
 }
@@ -51,7 +57,7 @@ async function zagruzitAkkaunt() {
       vyiti(data.csrf);
     });
   } catch (error) {
-    soobshenie.textContent = error.message || "Сервер недоступен. Обнови страницу.";
+    soobshenie.textContent = tekstOshibki(error, "Сервер недоступен. Обнови страницу.");
   }
 }
 

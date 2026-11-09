@@ -1,33 +1,20 @@
-# Установленные зависимости; файлы фиксации версий сохраняем.
-node_modules/
-vendor/
+# Локальные настройки с паролем БД; создаёт scripts/init-db.php.
 /config/local.php
 
-# Локальное окружение; безопасные примеры настроек сохраняем.
-.env
-.env.*
-!.env.example
-!.env.*.example
+# Сессии, лимиты попыток и загруженные файлы; папки создаёт backend/bootstrap.php.
+/storage/
 
-# Закрытые загрузки и данные, создаваемые при работе приложения.
-/storage/*
-!/storage/.gitkeep
-!/storage/README.md
+# Логи.
 *.log
-*.pid
 
-# Кэш и результаты тестов.
-.cache/
-.phpunit.cache/
-.phpunit.result.cache
-/coverage/
-
-# Локальные файлы редактора и операционной системы.
+# Редакторы.
 .idea/
-.vscode/*.local.json
+.vscode/
 *.swp
 *.swo
 *~
+
+# Файлы операционных систем.
 .DS_Store
 Thumbs.db
-Desktop.ini
+desktop.ini

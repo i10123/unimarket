@@ -14,6 +14,7 @@
   scroll-margin-top: 120px;
 }
 
+.dostup__ekran--otkryt,
 html:not([data-ekran]) .dostup__ekran--vhod,
 [data-ekran="vhod"] #vhod,
 [data-ekran="registraciya"] #registraciya {
@@ -25,10 +26,56 @@ html:not([data-ekran]) .dostup__ekran--vhod,
   text-align: center;
 }
 
-.dostup__privetstvie p {
-  margin-top: 8px;
+.dostup__zagolovok {
+  font-size: 20px;
+}
+
+/* Заголовок карточки и номер шага в одну строку. */
+.dostup__shapka {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dostup__shag,
+.pole small {
   color: var(--tekst-vtorichniy);
-  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.dostup__tekst {
+  color: var(--tekst-vtorichniy);
+  font-weight: 400;
+}
+
+/* Показываем только текущий шаг регистрации. */
+[data-shag="1"] #shag-profil,
+[data-shag="2"] #shag-dostup {
+  display: none;
+}
+
+.dostup__progress {
+  display: flex;
+  gap: 6px;
+}
+
+.dostup__progress span {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--granica);
+}
+
+.dostup__progress .dostup__progress-chast--aktiv {
+  background: var(--temniy);
+}
+
+.dostup__nazad {
+  align-self: flex-start;
+  color: var(--tekst-vtorichniy);
+  font-weight: 400;
 }
 
 .dostup__forma {
@@ -38,8 +85,17 @@ html:not([data-ekran]) .dostup__ekran--vhod,
   padding: 24px;
   border-radius: 16px;
   background: var(--poverhnost);
+  box-shadow: 0 12px 32px rgb(32 44 35 / 6%);
   font-size: 14px;
   font-weight: 600;
+  animation: poyavlenie 200ms ease-out;
+}
+
+@keyframes poyavlenie {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 }
 
 .dostup__forma a,
@@ -60,21 +116,70 @@ html:not([data-ekran]) .dostup__ekran--vhod,
   gap: 8px;
 }
 
-.pole input {
+.pole input,
+.pole select {
   width: 100%;
   min-width: 0;
   height: 52px;
   padding: 12px 16px;
   border: 1px solid var(--granica);
   border-radius: 12px;
-  background: var(--poverhnost);
+  background-color: var(--poverhnost);
   color: var(--tekst);
-  font: 400 15px/1.4 Manrope, Arial, sans-serif;
+  font: 400 15px/1.4 var(--shrift-tekst);
 }
 
-.pole input:focus {
+.pole select {
+  padding-right: 44px;
+  background: var(--poverhnost) url("../icons/chevron-down.svg") no-repeat right 16px center;
+  appearance: none;
+  cursor: pointer;
+}
+
+.pole input:focus,
+.pole select:focus {
   border-color: var(--tekst);
   outline: none;
+}
+
+.pole__zvezda {
+  color: var(--oshibka);
+}
+
+.pole__oshibka {
+  color: var(--oshibka);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.pole input[aria-invalid="true"],
+.pole select[aria-invalid="true"] {
+  border-color: var(--oshibka);
+}
+
+.pole__soglasie {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+}
+
+.pole__soglasie input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  padding: 0;
+  accent-color: var(--temniy);
+  cursor: pointer;
+}
+
+.pole__soglasie input[aria-invalid="true"] {
+  outline: 2px solid var(--oshibka);
+  outline-offset: 1px;
+}
+
+.pole__soglasie a {
+  text-decoration: underline;
 }
 
 .pole input::placeholder {
@@ -141,6 +246,12 @@ html:not([data-ekran]) .dostup__ekran--vhod,
   cursor: not-allowed;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .dostup__forma {
+    animation: none;
+  }
+}
+
 @media (max-width: 767.98px) {
   .dostup {
     padding-block: 24px 32px;
@@ -154,7 +265,8 @@ html:not([data-ekran]) .dostup__ekran--vhod,
     padding: 20px 16px;
   }
 
-  .pole input {
+  .pole input,
+  .pole select {
     font-size: 16px;
   }
 }

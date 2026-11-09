@@ -16,7 +16,12 @@ $pdo = new PDO($dsn, 'root', getenv('MYSQL_ROOT_PASSWORD') ?: '', [
 ]);
 $pdo->exec('CREATE DATABASE IF NOT EXISTS unimarket CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
 $pdo->exec('USE unimarket');
-$pdo->exec(file_get_contents($root . '/database/schema.sql'));
+// По одному запросу: exec() с несколькими сообщает об ошибке только первого.
+foreach (preg_split('/;\s*$/m', file_get_contents($root . '/database/schema.sql')) as $sql) {
+    if (trim($sql) !== '') {
+        $pdo->exec($sql);
+    }
+}
 
 $path = $root . '/config/local.php';
 $config = is_file($path) ? require $path : ['user' => 'unimarket', 'password' => bin2hex(random_bytes(24))];
@@ -28,4 +33,5 @@ $pdo->exec("CREATE USER IF NOT EXISTS 'unimarket'@'%' IDENTIFIED BY $password");
 $pdo->exec("ALTER USER 'unimarket'@'%' IDENTIFIED BY $password");
 $pdo->exec("GRANT SELECT, INSERT, UPDATE, DELETE ON unimarket.* TO 'unimarket'@'%'");
 file_put_contents($path, "<?php\n// Локальные реквизиты; не публиковать.\nreturn " . var_export($config, true) . ";\n");
-echo "База unimarket: 7 таблиц, отдельный пользователь приложения.\n";
+$tables = count($pdo->query('SHOW TABLES')->fetchAll());
+echo "База unimarket: таблиц — $tables, отдельный пользователь приложения.\n";
