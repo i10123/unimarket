@@ -218,6 +218,10 @@ html:not([data-ekran]) .dostup__ekran--vhod,
   cursor: pointer;
 }
 
+.pole__pokaz:focus-visible {
+  outline: none;
+}
+
 .pole__pokaz[aria-pressed="true"]::after {
   content: "";
   position: absolute;
