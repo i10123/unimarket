@@ -23,14 +23,13 @@
   <main class="dostup container">
     <section class="dostup__ekran dostup__ekran--vhod" id="vhod" aria-labelledby="vhod-title">
       <h1 id="vhod-title">С возвращением</h1>
-      <form class="dostup__forma" method="post" data-action="login" aria-labelledby="vhod-kartochka" novalidate>
-        <h2 class="dostup__zagolovok" id="vhod-kartochka">Вход</h2>
+      <form class="dostup__forma" method="post" data-action="login" aria-labelledby="vhod-title" novalidate>
         <div class="pole">
-          <label for="vhod-login">Логин <span class="pole__zvezda" aria-hidden="true">*</span></label>
+          <label for="vhod-login">Логин</label>
           <input id="vhod-login" name="login" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="32" required data-pusto="Введи логин.">
         </div>
         <div class="pole">
-          <label for="vhod-parol">Пароль <span class="pole__zvezda" aria-hidden="true">*</span></label>
+          <label for="vhod-parol">Пароль</label>
           <div class="pole__parol">
             <input id="vhod-parol" name="password" type="password" autocomplete="current-password" minlength="8" required data-pusto="Введи пароль." data-format="Пароль — не короче 8 символов.">
             <button class="pole__pokaz" type="button" aria-label="Показать пароль" aria-controls="vhod-parol" aria-pressed="false" data-parol>
@@ -40,8 +39,10 @@
         </div>
         <button class="button button--main" type="submit" disabled>Войти</button>
         <p class="dostup__status" role="status" hidden></p>
-        <p><a href="recovery.html">Восстановить доступ</a></p>
-        <p>Нет аккаунта? <a href="#registraciya">Зарегистрироваться</a></p>
+        <div class="dostup__ssylki">
+          <p><a href="#registraciya">Зарегистрироваться</a></p>
+          <p><a href="recovery.html">Восстановить доступ</a></p>
+        </div>
       </form>
     </section>
     <section class="dostup__ekran" id="registraciya" aria-labelledby="registraciya-title">

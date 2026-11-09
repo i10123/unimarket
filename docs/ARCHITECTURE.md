@@ -29,8 +29,6 @@ unimarket/
 ├── database/                  # schema.sql и README.md
 ├── scripts/init-db.php        # создание БД, таблиц и config/local.php
 ├── scripts/admin.php          # консоль администратора: пользователи, пароль, удаление
-├── tests/auth.php             # сквозной тест доступа
-├── tests/admin.php            # проверка консоли администратора
 ├── storage/                   # сессии и лимиты попыток, не в Git
 ├── docs/
 │   ├── ARCHITECTURE.md
