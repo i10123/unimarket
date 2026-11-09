@@ -16,17 +16,16 @@
 | `assets/js/auth.js` | Выбор формы, показ пароля, получение CSRF и отправка входа/регистрации |
 | `assets/js/account.js` | Загрузка аккаунта на каталоге и выход |
 | `assets/icons/`, `assets/fonts/` | SVG из Figma; локальный Manrope с лицензией OFL |
-| `router.php` | Маршрутизатор PHP-сервера: известные страницы, API, assets; редиректы по сессии; остальное 404 |
+| `router.php` | Маршрутизатор: известные страницы и API; редиректы по сессии; остальное 404 |
 | `backend/bootstrap.php` | PDO, сессия, currentUser(), respond(), лимит попыток |
 | `backend/auth.php` | API /api/auth: CSRF, проверка полей, вход, регистрация, выход, ошибки |
 | `backend/AuthHandler.php` | SQL регистрации (транзакция users + wallets) и входа |
 | `database/schema.sql`, `database/README.md` | Схема MySQL на 7 таблиц; ключи, связи и примеры запросов |
 | `config/example.php` | Пример настроек; рабочий config/local.php создаётся скриптом и не попадает в Git |
-| `scripts/setup-local.ps1` | Скачивание MySQL 8.4.13, создание данных, запуск MySQL, применение схемы |
-| `scripts/start.ps1`, `scripts/stop.ps1` | Запуск MySQL + PHP на 127.0.0.1:8000 и штатная остановка |
-| `scripts/init-db.php`, `scripts/shutdown-db.php` | Создание БД и пользователя приложения; остановка MySQL |
+| `.htaccess` | Apache: ресурсы assets отдаёт сам, остальные запросы направляет в router.php |
+| `scripts/init-db.php` | Папки storage, БД unimarket, 7 таблиц, пользователь приложения, config/local.php |
 | `tests/auth.php` | Сквозной тест доступа и защиты; создаёт и удаляет свой аккаунт |
-| `storage/` | Данные MySQL (mysql8), пароль root (mysql-admin.json), сессии, лимиты, журналы; не в Git |
+| `storage/` | Сессии и лимиты попыток; не в Git. Данные MySQL теперь хранит Open Server Panel |
 | `docs/ЗАЩИТА.md` | Шпаргалка к защите: что сделано, как работает, азы PHP/SQL/JS, вопросы |
 | `docs/mvp/SPECIFICATION.md` | Единственные актуальные требования MVP и порядок этапов |
 | `docs/full/` | Архив полной версии и история прогресса; не требования |

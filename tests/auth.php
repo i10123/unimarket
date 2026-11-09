@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/../backend/bootstrap.php';
 
-const SITE = 'http://127.0.0.1:8000';
+const SITE = 'http://unimarket.local';
 
 function check(bool $condition, string $message): void
 {
@@ -76,14 +76,15 @@ try {
     check(status('/pages/catalog.html') === 302, 'Гость получил закрытую страницу');
     $closedPaths = [
         '/config/local.php',
-        '/storage/mysql-admin.json',
+        '/storage/sessions',
         '/database/schema.sql',
         '/backend/auth.php',
         '/.git/config',
         '/assets/css/../../config/local.php',
     ];
     foreach ($closedPaths as $path) {
-        check(status($path) === 404, 'Закрытый файл доступен: ' . $path);
+        // .git Apache закрывает сам ответом 403, остальное — router.php ответом 404.
+        check(in_array(status($path), [403, 404], true), 'Закрытый файл доступен: ' . $path);
     }
 
     [$code, $session] = request('/api/auth');

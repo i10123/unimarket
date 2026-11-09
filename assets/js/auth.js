@@ -83,7 +83,7 @@ async function podgotovitFormy(formy) {
       forma.querySelector("[type=submit]").disabled = false;
     });
   } catch {
-    const tekst = "Сервер недоступен. Открой сайт через http://127.0.0.1:8000 и обнови страницу.";
+    const tekst = "Сервер недоступен. Включи Open Server Panel, открой http://unimarket.local и обнови страницу.";
     formy.forEach((forma) => {
       pokazatOshibku(forma, tekst);
     });

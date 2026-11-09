@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-// Маршрутизатор встроенного PHP-сервера: отдаёт только известные страницы,
-// API и публичные ресурсы. Всё остальное (config, backend, storage…) — 404.
+// Маршрутизатор: .htaccess направляет сюда все запросы, кроме файлов в assets.
+// Отдаём только известные страницы и API. Всё остальное (config, backend, storage…) — 404.
 
 const LOGIN_PAGE = '/pages/auth/login.html';
 const CATALOG_PAGE = '/pages/catalog.html';
@@ -32,12 +32,6 @@ if ($path === '/api/auth') {
 if (isset(PAGES[$path])) {
     servePage($path);
     return true;
-}
-
-// CSS, JS, иконки и шрифты отдаёт сам встроенный сервер (return false).
-$isAsset = preg_match('~^/assets/(css|js|icons|fonts)/[a-zA-Z0-9_.-]+\.(css|js|svg|ttf|woff2?)$~D', $path);
-if ($isAsset && is_file(__DIR__ . $path)) {
-    return false;
 }
 
 http_response_code(404);

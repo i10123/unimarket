@@ -1,0 +1,7 @@
+# Apache отдаёт напрямую только CSS, JS, иконки и шрифты.
+# Всё остальное идёт в router.php: он знает список страниц и API,
+# а config, backend, storage, database и прочее закрывает ответом 404.
+DirectorySlash Off
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/assets/(css|js|icons|fonts)/[A-Za-z0-9_.-]+\.(css|js|svg|ttf|woff2?)$
+RewriteRule ^ router.php [L]
