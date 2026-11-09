@@ -21,13 +21,15 @@ CREATE TABLE IF NOT EXISTS materials (
     title VARCHAR(180) NOT NULL,
     description TEXT NOT NULL,
     subject VARCHAR(100) NOT NULL,
+    -- Тип: конспект, решённые задачи, шпаргалка.
+    type ENUM('notes', 'solutions', 'cheatsheet') NOT NULL,
     course TINYINT UNSIGNED NULL CHECK (course BETWEEN 1 AND 6),
     price BIGINT NOT NULL CHECK (price >= 0),
     status ENUM('draft', 'published', 'archived') NOT NULL DEFAULT 'draft',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (author_id) REFERENCES users(id),
     INDEX catalog (status, created_at),
-    INDEX filters (status, subject, course, price)
+    INDEX filters (status, type, subject, course, price)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS purchases (

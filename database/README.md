@@ -6,7 +6,7 @@ MySQL 8.4 (модуль Open Server Panel), InnoDB, UTF-8. [schema.sql](schema.s
 |---|---|---|
 | users | PK id, уникальный логин (он же имя продавца), хеш пароля, необязательный курс | Аккаунт покупателя и продавца один |
 | wallets | PK/FK user_id, доступный остаток и резерв | Пользователь 1:1 кошелёк |
-| materials | PK id, FK author_id, описание, предмет, курс, цена, состояние | Автор 1:N материалы |
+| materials | PK id, FK author_id, название, описание, предмет, обязательный тип (`notes` — конспект, `solutions` — решённые задачи, `cheatsheet` — шпаргалка), курс, цена, состояние | Автор 1:N материалы |
 | purchases | PK id, FK buyer_id/material_id, цена при покупке, состояние и срок, проблема, факт замены, оценка 1–5 | Покупатель и материал 1:N покупки; покупка связывает пользователей и материалы M:N |
 | files | PK id, FK material_id **либо** purchase_id, закрытое имя хранения, исходное имя, формат и размер | Исходные файлы 1:N к материалу; замена 1:N к покупке |
 | favorites | Составной PK/FK user_id + material_id | Пользователи M:N материалы |
@@ -35,6 +35,13 @@ WHERE status = 'published'
 ORDER BY created_at DESC, id DESC
 LIMIT 20;
 
+-- Каталог с фильтром по типу, сначала дешёвые: индекс filters.
+SELECT id, title, subject, course, price
+FROM materials
+WHERE status = 'published' AND type = ?
+ORDER BY price ASC, id DESC
+LIMIT 20;
+
 -- Покупки конкретного пользователя: индекс начинается с buyer_id.
 SELECT p.id, m.title, p.price, p.status, p.purchased_at
 FROM purchases p JOIN materials m ON m.id = p.material_id
@@ -58,7 +65,7 @@ INSERT INTO favorites (user_id, material_id) VALUES (?, ?);
 DELETE FROM favorites WHERE user_id = ? AND material_id = ?;
 ```
 
-Уникальный логин ускоряет вход и не допускает дубликаты. Индексы catalog/filters обслуживают каталог; deadlines — будущую обработку истёкших сроков; history — историю кошелька. Скорость под нагрузкой не измерялась, полнотекстовый поиск пока не реализован.
+Уникальный логин ускоряет вход и не допускает дубликаты. Индексы обслуживают каталог: catalog — сортировку по новизне, filters (status, type, subject, course, price) — фильтры по типу, предмету, курсу и цене; deadlines — будущую обработку истёкших сроков; history — историю кошелька. Скорость под нагрузкой не измерялась, полнотекстовый поиск пока не реализован.
 
 ## Локальное подключение
 
@@ -67,5 +74,3 @@ DELETE FROM favorites WHERE user_id = ? AND material_id = ?;
 - Сервер БД — модуль MySQL-8.4 Open Server Panel; перед работой включить его в панели.
 - `scripts/init-db.php` подключается как `root` без пароля (настройка панели по умолчанию, MySQL слушает только локальный адрес). Повторный запуск создаёт недостающие таблицы, но не является системой миграций и не изменяет уже существующие поля.
 - Просмотр в браузере: [http://phpmyadmin.local](http://phpmyadmin.local) (phpMyAdmin из Open Server Panel). В списке «Текущий сервер» выбрать `MySQL-8.4 (root)`, затем база `unimarket`; после регистрации на сайте обновить таблицу `users`. Проект панели `D:\OSPanel\home\phpmyadmin.local` переименован из `phpmyadmin` и использует Apache и PHP-8.3. Альтернатива — Beekeeper Studio: хост `mysql-8.4.local`, порт 3306, пользователь `unimarket` (пароль в `config/local.php`).
-
-Предыдущие DATABASE_CONCEPT.md и draw.io относятся к прежней версии с услугами, чатами и администратором; для текущей структуры использовать этот документ и schema.sql.
