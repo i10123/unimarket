@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// Подготовка среды в Open Server Panel: папки хранилища, база unimarket, 7 таблиц,
+// Подготовка среды в Open Server Panel: база unimarket, 7 таблиц,
 // отдельный пользователь приложения и config/local.php.
 // Запуск (панель и модуль MySQL-8.4 включены): php scripts/init-db.php
 if (PHP_SAPI !== 'cli') exit;
@@ -9,12 +9,6 @@ if (PHP_SAPI !== 'cli') exit;
 $root = dirname(__DIR__);
 $host = 'mysql-8.4.local';
 $dsn = "mysql:host=$host;port=3306;charset=utf8mb4";
-
-foreach (['sessions', 'limits'] as $folder) {
-    if (!is_dir("$root/storage/$folder")) {
-        mkdir("$root/storage/$folder", 0775, true);
-    }
-}
 
 // shortcut: root без пароля — настройка Open Server Panel по умолчанию; на хостинге задать свой.
 $pdo = new PDO($dsn, 'root', getenv('MYSQL_ROOT_PASSWORD') ?: '', [

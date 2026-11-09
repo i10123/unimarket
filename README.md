@@ -39,7 +39,7 @@
 php scripts/init-db.php
 ```
 
-Скрипт создаёт папки storage, базу `unimarket`, 7 таблиц, пользователя приложения и локальный `config/local.php`.
+Скрипт создаёт базу `unimarket`, 7 таблиц, пользователя приложения и локальный `config/local.php`.
 
 3. Открой [http://unimarket.local](http://unimarket.local).
 

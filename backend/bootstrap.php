@@ -21,9 +21,20 @@ function db(): PDO
     return $pdo;
 }
 
+// Папки storage не хранятся в Git (после клонирования или очистки их нет), поэтому
+// создаём их при первом обращении. Без папки сессий session_start() выдаёт ошибки.
+function storageDir(string $name): string
+{
+    $path = ROOT . '/storage/' . $name;
+    if (!is_dir($path) && !mkdir($path, 0775, true) && !is_dir($path)) {
+        throw new RuntimeException('Не удалось создать папку ' . $path);
+    }
+    return $path;
+}
+
 function startSession(): void
 {
-    session_save_path(ROOT . '/storage/sessions');
+    session_save_path(storageDir('sessions'));
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');
     session_name('unimarket_session');
@@ -77,7 +88,7 @@ const AUTH_WINDOW_SECONDS = 15 * 60;
 // Счётчик хранится в файле на сервере, поэтому удаление cookie его не сбрасывает.
 function checkAuthLimit(): void
 {
-    $path = ROOT . '/storage/limits/' . hash('sha256', $_SERVER['REMOTE_ADDR']) . '.json';
+    $path = storageDir('limits') . '/' . hash('sha256', $_SERVER['REMOTE_ADDR']) . '.json';
     $file = fopen($path, 'c+');
     // Блокировка файла: два одновременных запроса не потеряют попытку.
     if (!$file || !flock($file, LOCK_EX)) {

@@ -65,7 +65,7 @@ function setLimit(string $path, int $count): void
 $cookieJar = tempnam(sys_get_temp_dir(), 'unimarket-');
 $login = 'test_' . bin2hex(random_bytes(6));
 $password = 'Учебный-пароль-123';
-$limitPath = ROOT . '/storage/limits/' . hash('sha256', '127.0.0.1') . '.json';
+$limitPath = storageDir('limits') . '/' . hash('sha256', '127.0.0.1') . '.json';
 $previousLimit = is_file($limitPath) ? file_get_contents($limitPath) : null;
 $userId = null;
 
