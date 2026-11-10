@@ -1,0 +1,171 @@
+/* Карточка материала: лендинг, каталог, избранное и профиль автора. */
+.material-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 228px;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 22px;
+  transition: transform 200ms, box-shadow 200ms;
+}
+
+@media (hover: hover) {
+  .material-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-3px);
+  }
+}
+
+.material-card--green {
+  --label: #d4e7a4;
+  background: var(--green-background);
+}
+
+.material-card--blue {
+  --label: #bcd6ef;
+  background: var(--blue-background);
+}
+
+.material-card--purple {
+  --label: #d3c7f3;
+  background: var(--purple-background);
+}
+
+.material-card__top,
+.material-card__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.material-card__meta,
+.material-card__author {
+  font-size: 12px;
+}
+
+.material-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Тип — плашка насыщеннее фона карточки, курс — полупрозрачная. */
+.material-card__meta span {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 65%);
+  font-weight: 600;
+}
+
+.material-card__meta span:first-child {
+  background: var(--label);
+}
+
+/* Ссылка растянута на всю карточку, поэтому нажимается любое её место. */
+.material-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+}
+
+.material-card__link:focus-visible {
+  outline: none;
+}
+
+.material-card__link:focus-visible::after {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+/* Сердце лежит выше ссылки: нажатие на него никуда не ведёт. */
+.material-card__save {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.material-card__content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+
+.material-card h3 {
+  font-size: 24px;
+  line-height: 28px;
+}
+
+.material-card__content p {
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.material-card__content p,
+.material-card__author {
+  /* Полупрозрачный тёмный остаётся читаемым на всех цветах карточек. */
+  color: rgb(25 34 28 / 72%);
+  font-family: var(--font-card);
+}
+
+/* Автор — отдельная ссылка выше растянутой ссылки карточки. */
+.material-card__author a {
+  position: relative;
+  z-index: 1;
+}
+
+.material-card__author a:hover {
+  text-decoration: underline;
+}
+
+.material-card__price {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 55%);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+@media (max-width: 767.98px) {
+  .material-card {
+    min-height: 0;
+  }
+
+  .material-card__top {
+    min-height: 24px;
+    padding-right: 40px;
+  }
+
+  .material-card__save {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .material-card__content {
+    gap: 6px;
+  }
+
+  .material-card h3 {
+    font-size: 20px;
+    line-height: 26px;
+  }
+}

@@ -1,0 +1,190 @@
+/* Поля форм: вход, регистрация, публикация, настройки, окна. */
+.field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 8px;
+}
+
+.field label,
+.field legend {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Звёздочка у обязательных полей; на форме входа её нет (form--bez-zvezd). */
+form:not(.form--bez-zvezd) .field:has(:required) label::after {
+  content: " *";
+  color: var(--error);
+}
+
+.field input:not([type="checkbox"], [type="radio"], [type="file"]),
+.field select,
+.field textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background-color: var(--surface);
+  color: var(--text);
+  font: 400 15px/1.4 var(--font-text);
+}
+
+.field input:not([type="checkbox"], [type="radio"], [type="file"]),
+.field select {
+  height: 46px;
+}
+
+.field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.field input[type="file"] {
+  font: 400 14px var(--font-text);
+}
+
+.field select {
+  padding-right: 44px;
+  background: var(--surface) url("../icons/chevron-down.svg") no-repeat right 16px center;
+  appearance: none;
+  cursor: pointer;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--text);
+  outline: none;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.field small {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.field__error,
+.form__status {
+  color: var(--error);
+  font-size: 12px;
+}
+
+.form__status--ok {
+  color: var(--text-muted);
+}
+
+[aria-invalid="true"] {
+  border-color: var(--error) !important;
+}
+
+.field__consent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.field__consent input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--dark);
+  cursor: pointer;
+}
+
+.field__consent input[aria-invalid="true"] {
+  outline: 2px solid var(--error);
+  outline-offset: 1px;
+}
+
+/* Кнопка-глаз добавляется скриптом внутрь .field__password. */
+.field__password {
+  position: relative;
+}
+
+.field__password input {
+  padding-right: 56px !important;
+}
+
+.field__toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.field__toggle[aria-pressed="true"]::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 1.5px;
+  background: var(--text-muted);
+  transform: rotate(45deg);
+}
+
+/* Два поля в ряд (имя и фамилия, цена от и до). */
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* Оценка звёздами: переключатели скрыты, подсвечивается выбранная и все до неё. */
+.stars {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  gap: 4px;
+  border: 0;
+  padding: 0;
+}
+
+.stars input {
+  position: absolute;
+  opacity: 0;
+}
+
+.stars label {
+  color: var(--border);
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.stars input:checked ~ label,
+.stars label:hover,
+.stars label:hover ~ label {
+  color: #e0a800;
+}
+
+.stars input:focus-visible + label {
+  outline: 2px solid var(--text);
+}
+
+@media (max-width: 767.98px) {
+  /* Шрифт 16px: при меньшем размере iPhone приближает страницу, когда поле получает фокус. */
+  .field input,
+  .field select,
+  .field textarea {
+    font-size: 16px;
+  }
+
+  .field-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
