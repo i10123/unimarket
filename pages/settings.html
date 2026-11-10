@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/assets/icons/logo.svg">
+  <title>Настройки — УниМаркет</title>
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/forms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <script type="module" src="../assets/js/settings.js"></script>
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container page">
+    <div class="cabinet">
+      <nav class="sidebar" aria-label="Кабинет"></nav>
+      <div class="cabinet__content">
+        <h1>Настройки</h1>
+        <form class="panel" id="profile" method="post">
+          <h2>Профиль</h2>
+          <input type="hidden" name="action" value="update_profile">
+          <div class="field">
+            <label for="login">Логин</label>
+            <input id="login" name="login" readonly>
+            <small>Логин другим не виден: они видят имя и фамилию или «User» с номером.</small>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="first_name">Имя</label>
+              <input id="first_name" name="first_name" autocomplete="given-name" maxlength="60" pattern="\p{L}[\p{L} '\-]*" title="Только буквы, пробел, дефис и апостроф.">
+            </div>
+            <div class="field">
+              <label for="last_name">Фамилия</label>
+              <input id="last_name" name="last_name" autocomplete="family-name" maxlength="60" pattern="\p{L}[\p{L} '\-]*" title="Только буквы, пробел, дефис и апостроф.">
+            </div>
+          </div>
+          <div class="field">
+            <label for="course">Курс</label>
+            <select id="course" name="course"><option value="">Не указан</option></select>
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" maxlength="255">
+          </div>
+          <button class="button button--main" type="submit">Сохранить изменения</button>
+          <p class="form__status" role="alert" hidden></p>
+        </form>
+        <form class="panel" id="password" method="post">
+          <h2>Смена пароля</h2>
+          <input type="hidden" name="action" value="change_password">
+          <div class="field">
+            <label for="old_password">Старый пароль</label>
+            <div class="field__password"><input id="old_password" name="old_password" type="password" autocomplete="current-password" required></div>
+          </div>
+          <div class="field">
+            <label for="new_password">Новый пароль</label>
+            <div class="field__password"><input id="new_password" name="new_password" type="password" autocomplete="new-password" minlength="8" required></div>
+          </div>
+          <div class="field">
+            <label for="repeat">Повтори новый пароль</label>
+            <div class="field__password"><input id="repeat" name="repeat" type="password" autocomplete="new-password" required></div>
+          </div>
+          <button class="button button--main" type="submit">Изменить пароль</button>
+          <p class="form__status" role="alert" hidden></p>
+        </form>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer"></footer>
+</body>
+</html>
