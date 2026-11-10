@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/assets/icons/logo.svg">
+  <title>Разместить материал — УниМаркет</title>
+  <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/forms.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <script type="module" src="../assets/js/publish.js"></script>
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container page page--forma">
+    <h1>Разместить</h1>
+    <form class="panel" method="post">
+      <h2>Информация о материале</h2>
+      <input type="hidden" name="action" value="publish">
+      <div class="field">
+        <label for="title">Название</label>
+        <input id="title" name="title" minlength="3" maxlength="180" placeholder="Конспект по базам данных" required>
+      </div>
+      <div class="field">
+        <label for="subject">Предмет</label>
+        <select id="subject" name="subject" required><option value="">Выбери предмет</option></select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="course">Курс</label>
+          <select id="course" name="course" required><option value="">Выбери курс</option></select>
+        </div>
+        <div class="field">
+          <label for="type">Тип</label>
+          <select id="type" name="type" required><option value="">Выбери тип</option></select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="description">Описание</label>
+        <textarea id="description" name="description" minlength="10" maxlength="3000" placeholder="Что внутри и кому пригодится" required></textarea>
+      </div>
+      <div class="field">
+        <label for="price">Цена, баллы</label>
+        <input id="price" name="price" type="number" min="0" max="100000" step="1" required>
+        <small>0 — бесплатно: за бесплатный материал начисляем 25 баллов. За платный получишь его цену при продаже.</small>
+      </div>
+      <div class="field">
+        <label for="files">Файлы</label>
+        <input id="files" name="files[]" type="file" multiple required>
+        <small>До 10 файлов, каждый до 15 МБ. Подойдёт любой формат, в том числе архив.</small>
+      </div>
+      <div class="field">
+        <div class="field__consent">
+          <input id="own" name="own" type="checkbox" title="Подтверди, что имеешь право делиться материалом." required>
+          <label for="own">Это мой материал, я имею право им делиться</label>
+        </div>
+      </div>
+      <button class="button button--main" type="submit">Опубликовать</button>
+      <p class="form__status" role="alert" hidden></p>
+      <p class="row__meta">Материал появится в каталоге сразу после публикации. Не больше 5 публикаций в день.</p>
+    </form>
+  </main>
+  <footer class="site-footer"></footer>
+</body>
+</html>
