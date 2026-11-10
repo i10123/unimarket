@@ -17,7 +17,7 @@
       <nav class="sidebar" aria-label="Кабинет"></nav>
       <div class="cabinet__content">
         <h1>Настройки</h1>
-        <form class="panel" id="profile" method="post">
+        <form class="panel panel--forma" id="profile" method="post">
           <h2>Профиль</h2>
           <input type="hidden" name="action" value="update_profile">
           <div class="field">
@@ -43,10 +43,15 @@
             <label for="email">Email</label>
             <input id="email" name="email" type="email" autocomplete="email" maxlength="255">
           </div>
+          <div class="field">
+            <label for="contact">Контакты для связи</label>
+            <input id="contact" name="contact" minlength="5" maxlength="255" aria-describedby="contact-hint" required>
+            <small id="contact-hint">Покупатели напишут сюда, если будут вопросы по материалу. Почта, телефон, Telegram, ссылка, что удобно. Это видят все.</small>
+          </div>
           <button class="button button--main" type="submit">Сохранить изменения</button>
           <p class="form__status" role="alert" hidden></p>
         </form>
-        <form class="panel" id="password" method="post">
+        <form class="panel panel--forma" id="password" method="post">
           <h2>Смена пароля</h2>
           <input type="hidden" name="action" value="change_password">
           <div class="field">
@@ -67,6 +72,5 @@
       </div>
     </div>
   </main>
-  <footer class="site-footer"></footer>
 </body>
 </html>

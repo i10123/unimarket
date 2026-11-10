@@ -12,7 +12,7 @@ function buy(material) {
   openDialog({
     title: "Покупка материала",
     text: material.price
-      ? `Будет зарезервировано ${points(material.price)}. Покупку можно подтвердить в «Мои покупки», иначе через 24 часа баллы перейдут автору.`
+      ? `С баланса спишется ${points(material.price)}, автор получит их сразу.${material.author_contact ? ` Если с файлом что-то не так, напиши автору: ${material.author_contact}.` : ""}`
       : "Материал бесплатный, баллы не списываются.",
     submit: material.price ? "Купить" : "Получить",
     onSubmit: async () => {
@@ -26,10 +26,7 @@ function buy(material) {
 function buyBlock(material, purchase, own) {
   const action = (() => {
     if (own) {
-      return el("p", {}, "Это твой материал.");
-    }
-    if (purchase?.status === "refunded") {
-      return el("p", {}, "Баллы за эту покупку возвращены. Повторно купить материал нельзя.");
+      return [el("p", {}, material.status === "archived" ? "Это твой материал, он снят с публикации." : "Это твой материал."), el("a", { class: "button button--secondary", href: `/pages/publish.html?id=${material.id}` }, "Редактировать")];
     }
     if (purchase) {
       return el("p", {}, "Материал куплен. ", el("a", { class: "file-link", href: "/pages/purchases.html" }, "Мои покупки"));
@@ -52,13 +49,14 @@ function buyBlock(material, purchase, own) {
       { class: "row__meta" },
       "Автор: ",
       el("a", { class: "file-link", href: `/pages/author.html?id=${material.author_id}` }, material.author_name),
-      ` · ${rating(material.author_rating, material.author_votes)}`
-    )
+      material.author_votes > 0 && ` · ${rating(material.author_rating, material.author_votes)}`
+    ),
+    material.author_contact && el("p", { class: "row__meta" }, `Связаться с автором: ${material.author_contact}`)
   );
 }
 
 function render({ material, files, purchase, own }) {
-  const canDownload = own || (purchase && purchase.status !== "refunded");
+  const canDownload = own || purchase;
   document.title = `${material.title} — УниМаркет`;
 
   content.replaceChildren(

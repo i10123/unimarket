@@ -23,12 +23,12 @@
   <main class="auth container">
     <section class="auth__screen" aria-labelledby="title">
       <h1 id="title">Добро пожаловать в УниМаркет</h1>
-      <!-- Шаг 1: данные для входа. Аккаунт создаётся только в конце шага 2. -->
+      <!-- Шаг 1: данные для входа. Аккаунт создаётся только в конце шага 3. -->
       <form class="auth__form" method="post" aria-label="Данные для входа">
-        <div class="auth__progress" aria-hidden="true"><span class="auth__progress-part--active"></span><span></span></div>
+        <div class="auth__progress" aria-hidden="true"><span class="auth__progress-part--active"></span><span></span><span></span></div>
         <div class="auth__header">
           <h2 class="auth__heading">Данные для входа</h2>
-          <p class="auth__step">Шаг 1 из 2</p>
+          <p class="auth__step">Шаг 1 из 3</p>
         </div>
         <div class="field">
           <label for="login">Логин</label>
@@ -57,13 +57,13 @@
         <p class="form__status" role="alert" hidden></p>
         <p>Уже есть аккаунт? <a href="login.html">Войти</a></p>
       </form>
-      <!-- Шаг 2: профиль, все поля необязательны. -->
+      <!-- Шаг 2: профиль, все поля необязательны. Шаг 3: обязательный контакт для связи. -->
       <form class="auth__form" method="post" aria-label="О себе" hidden>
-        <div class="auth__progress" aria-hidden="true"><span class="auth__progress-part--active"></span><span class="auth__progress-part--active"></span></div>
-        <button class="auth__back" type="button">← Назад к шагу 1</button>
+        <div class="auth__progress" aria-hidden="true"><span class="auth__progress-part--active"></span><span class="auth__progress-part--active"></span><span></span></div>
+        <button class="auth__back" type="button" data-step="1">← Назад к шагу 1</button>
         <div class="auth__header">
           <h2 class="auth__heading">Расскажи о себе</h2>
-          <p class="auth__step">Шаг 2 из 2</p>
+          <p class="auth__step">Шаг 2 из 3</p>
         </div>
         <div class="field">
           <label for="first_name">Имя</label>
@@ -84,6 +84,21 @@
           <input id="email" name="email" type="email" autocomplete="email" maxlength="255">
         </div>
         <button class="button button--secondary" id="skip" type="button">Пропустить</button>
+        <button class="button button--main" type="submit">Продолжить</button>
+        <p class="form__status" role="alert" hidden></p>
+      </form>
+      <form class="auth__form" method="post" aria-label="Контакты для связи" hidden>
+        <div class="auth__progress" aria-hidden="true"><span class="auth__progress-part--active"></span><span class="auth__progress-part--active"></span><span class="auth__progress-part--active"></span></div>
+        <button class="auth__back" type="button" data-step="2">← Назад к шагу 2</button>
+        <div class="auth__header">
+          <h2 class="auth__heading">Как с тобой связаться</h2>
+          <p class="auth__step">Шаг 3 из 3</p>
+        </div>
+        <div class="field">
+          <label for="contact">Контакты для связи</label>
+          <input id="contact" name="contact" minlength="5" maxlength="255" aria-describedby="contact-hint" required>
+          <small id="contact-hint">Покупатели напишут сюда, если будут вопросы по материалу. Почта, телефон, Telegram, ссылка, что удобно. Это видят все.</small>
+        </div>
         <button class="button button--main" type="submit">Создать аккаунт</button>
         <p class="form__status" role="alert" hidden></p>
       </form>

@@ -1,6 +1,6 @@
-// Профиль автора: имя, оценка, число материалов и его материалы.
+// Профиль автора: имя, контакт, оценка, число материалов и его материалы.
 
-import { el, rating, startPage } from "./common.js";
+import { el, plural, rating, startPage } from "./common.js";
 import { createList } from "./cards.js";
 
 await startPage();
@@ -11,18 +11,24 @@ const data = await createList("У автора пока нет материал�
 if (data) {
   const author = data.author;
   const panel = document.getElementById("author");
-  const number = (value, caption) => el("p", {}, el("strong", {}, value), caption);
 
   if (author) {
     document.title = `${author.name} — УниМаркет`;
+    // Показываем только то, что есть: пустые «нет оценок» и «0 материалов» не нужны.
+    const chips = [
+      author.course && `${author.course} курс`,
+      author.materials > 0 && `${author.materials} ${plural(author.materials, ["материал", "материала", "материалов"])}`,
+      author.votes > 0 && `${rating(author.average, author.votes)} · ${author.votes} ${plural(author.votes, ["оценка", "оценки", "оценок"])}`,
+    ].filter(Boolean);
+
     panel.append(
-      el("div", {}, el("h1", {}, author.name), author.course && el("p", { class: "empty" }, `${author.course} курс`)),
+      el("div", { class: "avatar", "aria-hidden": "true" }, author.name.slice(0, 1).toUpperCase()),
       el(
         "div",
-        { class: "author__numbers" },
-        number(rating(author.average, author.votes), "рейтинг автора"),
-        number(author.votes, "оценок"),
-        number(author.materials, "материалов")
+        { class: "author__info" },
+        el("h1", {}, author.name),
+        chips.length > 0 && el("p", { class: "author__chips" }, chips.map((chip) => el("span", {}, chip))),
+        author.contact && el("p", { class: "author__contact" }, `Связаться: ${author.contact}`)
       )
     );
   } else {

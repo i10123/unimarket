@@ -12,12 +12,26 @@ const list = createList("Ничего не нашлось. Попробуй из
 const isTyping = (event) => ["search", "number"].includes(event.target.type);
 let timer;
 
-fillSelects(form).catch((error) => showStatus(document.getElementById("status"), error.message));
+try {
+  await fillSelects(form);
+} catch (error) {
+  showStatus(document.getElementById("status"), error.message);
+}
+
+// Фильтры хранятся в адресе страницы: после обновления поля заполняются обратно.
+const saved = new URLSearchParams(location.search);
+for (const field of form.elements) {
+  if (field.name && saved.has(field.name)) {
+    field.value = saved.get(field.name);
+  }
+}
 
 // В запрос идут только заполненные поля формы.
 async function search() {
   clearTimeout(timer);
   const params = Object.fromEntries([...new FormData(form)].filter(([, value]) => value !== ""));
+  const query = new URLSearchParams(params).toString();
+  history.replaceState(null, "", location.pathname + (query && `?${query}`));
   const data = await list.reload(params);
   if (data) {
     total.textContent = `Найдено: ${data.total} ${plural(data.total, ["материал", "материала", "материалов"])}`;
