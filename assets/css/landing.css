@@ -26,7 +26,8 @@
 }
 
 .landing {
-  padding-block: 32px 40px;
+  gap: 32px;
+  padding-block: 40px 56px;
 }
 
 .welcome {
@@ -34,9 +35,9 @@
   grid-template-columns: minmax(0, 850px) 310px;
   justify-content: space-between;
   gap: 24px;
-  padding: 32px;
-  border-radius: 16px;
-  background: var(--dark);
+  padding: 40px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #202c23, #2c3e31);
   color: var(--surface);
 }
 
@@ -62,9 +63,9 @@
   align-items: center;
   gap: 6px;
   align-self: center;
-  padding: 20px 24px;
-  border-radius: 20px;
-  background: var(--accent);
+  padding: 24px;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #d6f566, #c3e940);
   color: var(--text);
   font-size: 14px;
   font-weight: 600;
@@ -72,7 +73,7 @@
 }
 
 .welcome__points {
-  font-family: var(--backgroundt-heading);
+  font-family: var(--font-heading);
   font-size: 64px;
   font-weight: 500;
   line-height: 1;
@@ -84,127 +85,6 @@
   gap: 16px;
 }
 
-.material-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 228px;
-  gap: 12px;
-  padding: 18px;
-  border-radius: 20px;
-}
-
-.material-card--green {
-  --label: #c7e083;
-  background: var(--green-background);
-}
-
-.material-card--blue {
-  --label: #a9cdee;
-  background: var(--blue-background);
-}
-
-.material-card--purple {
-  --label: #c5b3ef;
-  background: var(--purple-background);
-}
-
-.material-card__top,
-.material-card__bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.material-card__meta,
-.material-card__author {
-  font-size: 12px;
-}
-
-.material-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-/* Тип — плашка насыщеннее фона карточки, курс — полупрозрачная. */
-.material-card__meta span {
-  padding: 4px 8px;
-  border-radius: 6px;
-  background: rgb(255 255 255 / 65%);
-  font-weight: 600;
-}
-
-.material-card__meta span:first-child {
-  background: var(--label);
-}
-
-/* Ссылка растянута на всю карточку, поэтому нажимается любое её место. */
-.material-card__link::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 20px;
-}
-
-.material-card__link:focus-visible {
-  outline: none;
-}
-
-.material-card__link:focus-visible::after {
-  outline: 2px solid var(--text);
-  outline-offset: 2px;
-}
-
-/* Сердце лежит выше ссылки: нажатие на него никуда не ведёт. */
-.material-card__save {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-}
-
-.material-card__content {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 8px;
-  overflow-wrap: anywhere;
-}
-
-.material-card h3 {
-  font-size: 24px;
-  line-height: 28px;
-}
-
-.material-card__content p {
-  font-size: 13px;
-  line-height: 18px;
-}
-
-.material-card__content p,
-.material-card__author {
-  /* Полупрозрачный тёмный остаётся читаемым на всех цветах карточек. */
-  color: rgb(25 34 28 / 72%);
-  font-family: var(--backgroundt-card);
-}
-
-.material-card__price {
-  flex-shrink: 0;
-  padding: 4px 10px;
-  border-radius: 8px;
-  background: rgb(255 255 255 / 55%);
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 22px;
-}
-
 .publish-banner {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 260px;
@@ -212,7 +92,7 @@
   min-height: 112px;
   gap: 24px;
   padding: 24px;
-  border-radius: 16px;
+  border-radius: 22px;
   background: var(--green-background);
 }
 
@@ -235,8 +115,9 @@
 }
 
 .faq__item {
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .faq__item summary {
@@ -281,43 +162,8 @@
   font-size: 14px;
 }
 
-.site-footer {
-  background: var(--dark);
-  color: var(--surface);
-}
-
-.site-footer__inner {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 24px;
-  padding-block: 32px;
-}
-
-.site-footer .brand {
-  font-size: 18px;
-}
-
-.site-footer__nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px 36px;
-  font-size: 12px;
-}
-
 .welcome :focus-visible {
   outline-color: var(--accent);
-}
-
-.site-footer :focus-visible {
-  outline-color: var(--surface);
-}
-
-@media (hover: hover) {
-  .site-footer__nav a:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
 }
 
 /* Три раскладки: ноутбук (от 1200px) — базовые правила выше,
@@ -343,8 +189,7 @@
   .faq,
   .welcome,
   .material-grid,
-  .publish-banner,
-  .site-footer__inner {
+  .publish-banner {
     display: flex;
     flex-direction: column;
   }
@@ -386,49 +231,13 @@
     font-size: 22px;
   }
 
-  .material-card {
-    min-height: 0;
-  }
-
-  .material-card__top {
-    min-height: 24px;
-    padding-right: 40px;
-  }
-
-  .material-card__save {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 44px;
-    height: 44px;
-  }
-
-  .material-card__content {
-    gap: 6px;
-  }
-
-  .material-card h3 {
-    font-size: 20px;
-    line-height: 26px;
-  }
-
   .faq__item summary,
   .faq__item p {
     padding-inline: 16px;
   }
 
-  .site-footer__inner {
-    gap: 16px;
-    padding-block: 24px;
-    text-align: center;
-  }
-
-  .site-footer__nav {
-    justify-content: center;
-  }
-
   /* В шапке вместо текста иконки входа и регистрации. */
-  .site-header__inner,
+  .site-header__vnutri,
   .site-header__actions {
     gap: 8px;
   }
