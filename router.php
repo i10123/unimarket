@@ -7,16 +7,27 @@ declare(strict_types=1);
 const LOGIN_PAGE = '/pages/auth/login.html';
 const CATALOG_PAGE = '/pages/catalog.html';
 
-// Адрес в браузере => файл в проекте.
-const PAGES = [
-    '/' => '/index.html',
-    '/index.html' => '/index.html',
-    LOGIN_PAGE => LOGIN_PAGE,
-    '/pages/auth/recovery.html' => '/pages/auth/recovery.html',
-    CATALOG_PAGE => CATALOG_PAGE,
+// Страницы только для гостя: после входа они ведут в каталог.
+const GUEST_PAGES = ['/index.html', LOGIN_PAGE, '/pages/auth/register.html', '/pages/auth/recovery.html'];
+
+// Страницы только после входа: гостя отправляем на вход.
+const USER_PAGES = [
+    CATALOG_PAGE,
+    '/pages/material.html',
+    '/pages/publish.html',
+    '/pages/favorites.html',
+    '/pages/author.html',
+    '/pages/account.html',
+    '/pages/purchases.html',
+    '/pages/sales.html',
+    '/pages/settings.html',
 ];
 
+// Адрес /api/<имя> => backend/api/<имя>.php
+const API = ['auth', 'market', 'deals', 'account', 'download'];
+
 $path = rawurldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/');
+$path = $path === '/' ? '/index.html' : $path;
 
 // Заголовки безопасности для всех ответов.
 header('X-Content-Type-Options: nosniff');
@@ -25,12 +36,12 @@ header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-sr
     . "img-src 'self'; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; "
     . "base-uri 'none'; form-action 'self'");
 
-if ($path === '/api/auth') {
-    require __DIR__ . '/backend/auth.php';
+if (preg_match('#^/api/([a-z]+)$#D', $path, $match) && in_array($match[1], API, true)) {
+    require __DIR__ . "/backend/api/$match[1].php";
     exit;
 }
 
-if (isset(PAGES[$path])) {
+if (in_array($path, [...GUEST_PAGES, ...USER_PAGES], true)) {
     servePage($path);
     exit;
 }
@@ -50,19 +61,18 @@ function servePage(string $path): void
     startSession();
     header('Cache-Control: no-store');
 
-    // Каталог — только после входа; лендинг и формы — только для гостя.
     $loggedIn = isset($_SESSION['user_id']);
-    $isCatalog = $path === CATALOG_PAGE;
-    if ($isCatalog && !$loggedIn) {
-        redirect(LOGIN_PAGE);
-    }
-    if (!$isCatalog && $loggedIn) {
+    $isGuestPage = in_array($path, GUEST_PAGES, true);
+    if ($isGuestPage && $loggedIn) {
         redirect(CATALOG_PAGE);
+    }
+    if (!$isGuestPage && !$loggedIn) {
+        redirect(LOGIN_PAGE);
     }
 
     header('Content-Type: text/html; charset=utf-8');
     if ($_SERVER['REQUEST_METHOD'] !== 'HEAD') {
-        readfile(__DIR__ . PAGES[$path]);
+        readfile(__DIR__ . $path);
     }
 }
 

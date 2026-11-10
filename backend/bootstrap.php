@@ -1,9 +1,28 @@
 <?php
 declare(strict_types=1);
 
-// Общие функции backend: подключение к БД, сессия, текущий пользователь, JSON-ответ.
+// Общие функции backend: БД, сессия, текущий пользователь, JSON-ответы, защита POST.
 
 const ROOT = __DIR__ . '/..';
+
+// Предупреждения PHP не показываем в ответе: они ломают JSON и раскрывают пути. Они пишутся в лог.
+ini_set('display_errors', '0');
+
+// Имя для показа другим: имя и фамилия, что заполнено, иначе «User22». Таблица users — с алиасом u.
+const DISPLAY_NAME = "COALESCE(NULLIF(TRIM(CONCAT_WS(' ', u.first_name, u.last_name)), ''), CONCAT('User', u.id))";
+
+// Классы лежат в файлах с тем же именем: Market.php, Deals.php и т. д.
+spl_autoload_register(fn(string $class) => require __DIR__ . "/$class.php");
+require __DIR__ . '/validation.php';
+
+// Ошибка для пользователя: runApi() превращает её в JSON с нужным HTTP-статусом.
+final class ApiError extends Exception
+{
+    public function __construct(string $message, public readonly int $status = 422)
+    {
+        parent::__construct($message);
+    }
+}
 
 // Одно подключение PDO на запрос (static сохраняет его между вызовами).
 function db(): PDO
@@ -19,6 +38,20 @@ function db(): PDO
         $pdo->exec("SET time_zone = '+00:00'");
     }
     return $pdo;
+}
+
+// Всё внутри функции сохраняется целиком или не сохраняется вовсе.
+function transaction(callable $action): mixed
+{
+    db()->beginTransaction();
+    try {
+        $result = $action();
+        db()->commit();
+        return $result;
+    } catch (Throwable $error) {
+        db()->rollBack();
+        throw $error;
+    }
 }
 
 // Папки storage не хранятся в Git (после клонирования или очистки их нет), поэтому
@@ -48,22 +81,24 @@ function startSession(): void
     $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 }
 
-// Имя для показа другим: то, что заполнено из имени и фамилии, иначе «User22».
-function displayName(array $user): string
+// Новый идентификатор сессии после входа или выхода защищает от подмены сессии.
+function renewSession(): void
 {
-    $name = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
-    return $name !== '' ? $name : 'User' . $user['id'];
+    session_regenerate_id(true);
+    $_SESSION['csrf'] = bin2hex(random_bytes(32));
 }
 
 // Вошедший пользователь с остатками кошелька или null для гостя.
+// Заодно закрываем покупки с истёкшим сроком: планировщика нет, остатки считаем при обращении.
 function currentUser(): ?array
 {
     if (!isset($_SESSION['user_id'])) {
         return null;
     }
 
+    (new Deals(db()))->settleOverdue();
     $query = db()->prepare(
-        'SELECT u.id, u.login, u.first_name, u.last_name, w.available, w.reserved
+        'SELECT u.id, u.login, ' . DISPLAY_NAME . ' AS display_name, w.available, w.reserved
         FROM users u
         JOIN wallets w ON w.user_id = u.id
         WHERE u.id = ?'
@@ -76,8 +111,12 @@ function currentUser(): ?array
         unset($_SESSION['user_id']);
         return null;
     }
-    $user['display_name'] = displayName($user);
     return $user;
+}
+
+function requireUser(): array
+{
+    return currentUser() ?? throw new ApiError('Нужно войти в аккаунт.', 401);
 }
 
 function respond(array $data, int $status = 200): never
@@ -89,10 +128,54 @@ function respond(array $data, int $status = 200): never
     exit;
 }
 
-const AUTH_ATTEMPTS = 20;
+// Данные POST-запроса: JSON или форма с файлами. Токен из заголовка должен совпасть
+// с токеном в сессии: так чужой сайт не отправит запрос от имени пользователя.
+function postInput(): array
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Allow: GET, POST');
+        throw new ApiError('Метод не поддерживается.', 405);
+    }
+    if (!hash_equals($_SESSION['csrf'], $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '')) {
+        throw new ApiError('Обнови страницу и повтори действие.', 403);
+    }
+    if (str_starts_with($_SERVER['CONTENT_TYPE'] ?? '', 'multipart/form-data')) {
+        // Если запрос больше post_max_size, PHP отбрасывает и поля, и файлы: объясняем причину.
+        if (!$_POST && !$_FILES && (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
+            throw new ApiError('Файлы слишком большие: сервер принимает не больше ' . ini_get('post_max_size') . ' за один раз.', 413);
+        }
+        return $_POST;
+    }
+    if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 4096) {
+        throw new ApiError('Слишком большой запрос.', 413);
+    }
+    $input = json_decode(file_get_contents('php://input'), true, 16, JSON_THROW_ON_ERROR);
+    return is_array($input) ? $input : throw new ApiError('Некорректные данные.');
+}
+
+// Обёртка каждого API: сессия и единая обработка ошибок. Подробности сбоя — только в лог.
+function runApi(callable $handler): void
+{
+    try {
+        startSession();
+        $handler();
+    } catch (ApiError $error) {
+        respond(['error' => $error->getMessage()], $error->status);
+    } catch (JsonException) {
+        respond(['error' => 'Некорректный JSON.'], 400);
+    } catch (PDOException $error) {
+        error_log((string) $error);
+        respond(['error' => 'База данных недоступна. Попробуй позже.'], 503);
+    } catch (Throwable $error) {
+        error_log((string) $error);
+        respond(['error' => 'Не удалось выполнить действие. Попробуй позже.'], 500);
+    }
+}
+
+const AUTH_ATTEMPTS = 60;
 const AUTH_WINDOW_SECONDS = 15 * 60;
 
-// Не больше 20 попыток входа/регистрации за 15 минут с одного IP.
+// Не больше 60 попыток входа, регистрации или смены пароля за 15 минут с одного IP.
 // Счётчик хранится в файле на сервере, поэтому удаление cookie его не сбрасывает.
 function checkAuthLimit(): void
 {
@@ -111,7 +194,7 @@ function checkAuthLimit(): void
     if ($limit['count'] >= AUTH_ATTEMPTS) {
         fclose($file);
         header('Retry-After: ' . ($limit['until'] - time()));
-        respond(['error' => 'Слишком много попыток. Попробуй через 15 минут.'], 429);
+        throw new ApiError('Слишком много попыток. Попробуй через 15 минут.', 429);
     }
 
     $limit['count']++;
