@@ -12,7 +12,13 @@
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  padding: 6px 10px;
+  border-radius: 12px;
   font-size: 12px;
+}
+
+.app-nav [aria-current="page"]:not(.button) {
+  background: var(--green-background);
 }
 
 .app-nav .button {
@@ -40,7 +46,6 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  min-height: 60vh;
   padding-block: 32px 48px;
 }
 
@@ -64,13 +69,9 @@
   font-size: 18px;
 }
 
-.panel--dark {
-  background: linear-gradient(135deg, #202c23, #2c3e31);
-  color: var(--surface);
-}
-
-.panel--dark .row__meta {
-  color: rgb(255 255 255 / 70%);
+/* Форма не растягивается на всю ширину. */
+.panel--forma {
+  max-width: 720px;
 }
 
 /* Узкая колонка для формы публикации. */
@@ -140,7 +141,69 @@
   }
 }
 
-/* Строки списков: покупки, продажи, история баллов. */
+/* Мои покупки: цветные карточки, цвет и плашки берутся из cards.css. */
+.purchases {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.purchase {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  border-radius: 22px;
+  overflow-wrap: anywhere;
+}
+
+.purchase__top,
+.purchase__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.purchase__bottom {
+  margin-top: auto;
+}
+
+.purchase h3 {
+  font-size: 22px;
+  line-height: 28px;
+}
+
+.purchase__seller {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.purchase__seller .avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 65%);
+  font-size: 13px;
+}
+
+.purchase__box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 60%);
+}
+
+.purchase__contact {
+  margin: 0;
+  font-size: 13px;
+}
+
+/* Строки списков: продажи и история баллов. */
 .rows {
   display: flex;
   flex-direction: column;
@@ -161,10 +224,6 @@
   background: var(--surface);
   box-shadow: var(--shadow);
   overflow-wrap: anywhere;
-}
-
-.row--vnimanie {
-  background: var(--green-background);
 }
 
 .row__text {
@@ -196,6 +255,11 @@
   padding: 8px 14px;
 }
 
+.row__actions .button--ikonka {
+  width: 40px;
+  padding: 0;
+}
+
 .row__sum {
   font-weight: 600;
   white-space: nowrap;
@@ -211,27 +275,6 @@
   text-decoration: underline;
 }
 
-.badge {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 999px;
-  background: var(--border);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.badge--ozhidanie {
-  background: var(--blue-background);
-}
-
-.badge--problema {
-  background: #f8d7d3;
-}
-
-.badge--gotovo {
-  background: var(--green-background);
-}
-
 .counters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -244,7 +287,13 @@
 
 .profile-head {
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
+}
+
+/* Кнопка редактирования прижата вправо. */
+.profile-head .button {
+  margin-left: auto;
 }
 
 .avatar {
@@ -258,7 +307,7 @@
   font: 500 20px var(--font-heading);
 }
 
-/* Крупное число: баланс и цена материала. */
+/* Крупное число: цена материала. */
 .big-number {
   font: 500 32px var(--font-heading);
 }
@@ -329,7 +378,8 @@
 }
 
 @media (max-width: 1199.98px) {
-  .material {
+  .material,
+  .purchases {
     grid-template-columns: minmax(0, 1fr);
   }
 }

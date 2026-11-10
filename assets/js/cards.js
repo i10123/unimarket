@@ -56,7 +56,7 @@ function renderCard(item) {
         "p",
         { class: "material-card__author" },
         el("a", { href: `/pages/author.html?id=${item.author_id}` }, item.author_name),
-        ` · ${rating(item.author_rating, item.author_votes)}`
+        item.author_votes > 0 && ` · ${rating(item.author_rating, item.author_votes)}`
       ),
       el("p", { class: "material-card__price" }, price(item.price, "Бесплатно"))
     )

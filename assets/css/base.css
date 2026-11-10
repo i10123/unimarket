@@ -111,10 +111,6 @@ html {
   scroll-padding-top: 96px;
 }
 
-::selection {
-  background: var(--accent);
-}
-
 /* Атрибут hidden должен скрывать и элементы с собственным display (flex, inline-flex). */
 [hidden] {
   display: none !important;
@@ -265,40 +261,6 @@ img {
   }
 }
 
-.site-footer {
-  background: linear-gradient(180deg, #243228, #1b251e);
-  color: var(--surface);
-}
-
-.site-footer__vnutri {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 24px;
-  padding-block: 32px;
-}
-
-.site-footer .brand {
-  font-size: 18px;
-}
-
-.site-footer__nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px 36px;
-  font-size: 12px;
-}
-
-.site-footer :focus-visible {
-  outline-color: var(--surface);
-}
-
-@media (hover: hover) {
-  .site-footer__nav a:hover {
-    text-decoration: underline;
-  }
-}
-
 @media (max-width: 767.98px) {
   .site-header .brand {
     font-size: 20px;
@@ -311,18 +273,6 @@ img {
 
   .container {
     width: calc(100% - 32px);
-  }
-
-  .site-footer__vnutri {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding-block: 24px;
-    text-align: center;
-  }
-
-  .site-footer__nav {
-    justify-content: center;
   }
 }
 

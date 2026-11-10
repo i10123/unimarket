@@ -87,7 +87,7 @@ export function showStatus(node, text, isError = true) {
 const MENU = [
   ["account", "Общее", "/pages/account.html"],
   ["purchases", "Мои покупки", "/pages/purchases.html"],
-  ["sales", "Мои продажи", "/pages/sales.html"],
+  ["sales", "Мои материалы", "/pages/sales.html"],
   ["settings", "Настройки", "/pages/settings.html"],
 ];
 
@@ -116,8 +116,9 @@ export async function startPage(menuItem) {
         <a class="button button--main" href="/pages/publish.html" aria-label="Разместить материал">+<span> Разместить</span></a>
       </nav>
     </div>`;
-  document.querySelector(".site-footer").innerHTML = `
-    <div class="site-footer__vnutri container"><a class="brand" href="/pages/catalog.html">УниМаркет</a></div>`;
+  // Подсвечиваем текущий раздел; все страницы с боковым меню относятся к профилю.
+  const here = menuItem ? "/pages/account.html" : location.pathname;
+  document.querySelector(`.app-nav a[href="${here}"]`)?.setAttribute("aria-current", "page");
 
   if (menuItem) {
     document.querySelector(".sidebar").replaceChildren(
