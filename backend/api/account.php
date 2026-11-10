@@ -46,7 +46,9 @@ function accountData(PDO $db, array $user): array
     $query = $db->prepare(
         "SELECT u.login, u.first_name, u.last_name, u.email, u.course, u.contact, u.created_at,
             (SELECT COUNT(*) FROM purchases WHERE buyer_id = u.id) AS purchases,
+            (SELECT COALESCE(SUM(price), 0) FROM purchases WHERE buyer_id = u.id) AS spent,
             (SELECT COUNT(*) FROM materials WHERE author_id = u.id) AS materials,
+            (SELECT COALESCE(SUM(p.price), 0) FROM purchases p JOIN materials m ON m.id = p.material_id WHERE m.author_id = u.id) AS earned,
             r.average AS rating, COALESCE(r.votes, 0) AS votes
         FROM users u
         LEFT JOIN " . Market::RATINGS . " ON r.author_id = u.id

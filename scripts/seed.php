@@ -2,9 +2,10 @@
 declare(strict_types=1);
 
 // Тестовые данные для показа: 10 демо-пользователей (demo01 … demo10) и 50 их материалов
-// случайных типов, у каждого один файл .md. Запускать можно повторно: прежние демо-аккаунты
-// и их материалы удаляются, обычные аккаунты не затрагиваются.
+// случайных типов, у каждого один файл .md. Обычные аккаунты не затрагиваются. Если демо-данные уже есть,
+// обычный запуск ничего не меняет: пересоздание стирает покупки живых аккаунтов у демо-материалов.
 // Запуск (панель и модуль MySQL-8.4 включены): php scripts/seed.php
+// Пересоздать данные: php scripts/seed.php fresh
 // То же и ещё покупки с оценками, чтобы показ выглядел живым: php scripts/seed.php demo
 // Только удалить демо-данные, ничего не создавая: php scripts/seed.php clear
 if (PHP_SAPI !== 'cli') {
@@ -56,10 +57,16 @@ $db = db();
 $auth = new AuthHandler($db);
 $market = new Market($db);
 
-foreach ($db->query("SELECT id FROM users WHERE login REGEXP '^demo[0-9]{2}$'")->fetchAll(PDO::FETCH_COLUMN) as $id) {
+$mode = $argv[1] ?? '';
+$demoIds = $db->query("SELECT id FROM users WHERE login REGEXP '^demo[0-9]{2}$'")->fetchAll(PDO::FETCH_COLUMN);
+// Пересоздание удаляет материалы демо-пользователей вместе с покупками живых аккаунтов, поэтому только по явной команде.
+if ($demoIds && !in_array($mode, ['fresh', 'demo', 'clear'], true)) {
+    exit("Демо-данные уже есть, ничего не изменено. Пересоздать (покупки живых аккаунтов у демо-материалов пропадут): php scripts/seed.php fresh\n");
+}
+foreach ($demoIds as $id) {
     $auth->delete((int) $id);
 }
-if (($argv[1] ?? '') === 'clear') {
+if ($mode === 'clear') {
     exit("Демо-пользователи и их материалы удалены.\n");
 }
 
@@ -101,7 +108,7 @@ foreach ($topics as $i => [$subject, $topic]) {
 }
 
 // Режим demo: каждый пользователь покупает три чужих материала, две покупки из трёх получают оценку.
-if (($argv[1] ?? '') === 'demo') {
+if ($mode === 'demo') {
     $deals = new Deals($db);
     foreach ($users as $buyer) {
         foreach (array_rand($created, 3) as $key) {
