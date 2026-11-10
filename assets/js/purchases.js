@@ -48,10 +48,9 @@ function card(p) {
     el(
       "a",
       { class: "purchase__seller", href: `/pages/author.html?id=${p.author_id}` },
-      el("span", { class: "avatar", "aria-hidden": "true" }, p.seller_name.slice(0, 1).toUpperCase()),
-      p.seller_name
+      `Продавец: ${p.seller_name}`
     ),
-    el("div", { class: "purchase__box" }, p.files.map(downloadLink)),
+    el("div", { class: "purchase__files" }, p.files.map(downloadLink)),
     p.seller_contact && el("p", { class: "purchase__contact" }, `Если с файлом что-то не так, напиши продавцу: ${p.seller_contact}`),
     el(
       "div",

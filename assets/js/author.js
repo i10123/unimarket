@@ -14,11 +14,12 @@ if (data) {
 
   if (author) {
     document.title = `${author.name} — УниМаркет`;
-    // Показываем только то, что есть: пустые «нет оценок» и «0 материалов» не нужны.
-    const chips = [
-      author.course && `${author.course} курс`,
-      author.materials > 0 && `${author.materials} ${plural(author.materials, ["материал", "материала", "материалов"])}`,
-      author.votes > 0 && `${rating(author.average, author.votes)} · ${author.votes} ${plural(author.votes, ["оценка", "оценки", "оценок"])}`,
+    // Рейтинг показываем всегда, даже без оценок; «0 материалов» не нужны.
+    // Пары [значение, подпись] выводятся справа колонками.
+    const stats = [
+      author.course && [author.course, "курс"],
+      author.materials > 0 && [author.materials, plural(author.materials, ["материал", "материала", "материалов"])],
+      author.votes > 0 ? [rating(author.average, author.votes), `${author.votes} ${plural(author.votes, ["оценка", "оценки", "оценок"])}`] : ["—", "нет оценок"],
     ].filter(Boolean);
 
     panel.append(
@@ -27,8 +28,12 @@ if (data) {
         "div",
         { class: "author__info" },
         el("h1", {}, author.name),
-        chips.length > 0 && el("p", { class: "author__chips" }, chips.map((chip) => el("span", {}, chip))),
         author.contact && el("p", { class: "author__contact" }, `Связаться: ${author.contact}`)
+      ),
+      el(
+        "dl",
+        { class: "author__stats" },
+        stats.map(([value, label]) => el("div", {}, el("dt", {}, value), el("dd", {}, label)))
       )
     );
   } else {

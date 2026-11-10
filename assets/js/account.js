@@ -1,6 +1,6 @@
 // Общее: профиль, счётчики и история баллов.
 
-import { api, el, formatDate, rating, showStatus, startPage } from "./common.js";
+import { api, el, formatDate, points, rating, showStatus, startPage } from "./common.js";
 
 const user = await startPage("account");
 const content = document.getElementById("content");
@@ -34,6 +34,7 @@ function historyRow(entry) {
 try {
   const { profile, history } = await api("/api/account");
   const name = [profile.first_name, profile.last_name].filter(Boolean).join(" ") || user.display_name;
+  const since = new Date(profile.created_at.replace(" ", "T") + "Z").toLocaleDateString("ru-RU", { day: "numeric", month: "long" });
   const counter = (value, title, href) => el("a", { class: "panel", href }, el("p", {}, title), el("strong", {}, value));
 
   content.append(
@@ -45,8 +46,9 @@ try {
         "div",
         {},
         el("h2", {}, name),
-        el("p", { class: "row__meta" }, [profile.course && `${profile.course} курс`, profile.votes > 0 && `рейтинг продавца ${rating(profile.rating, profile.votes)}`].filter(Boolean).join(" · ")),
-        el("p", { class: "row__meta" }, profile.contact && `Контакты: ${profile.contact}`)
+        el("p", { class: "row__meta" }, [profile.course && `${profile.course} курс`, `на сайте с ${since}`].filter(Boolean).join(" · ")),
+        el("p", { class: "row__meta" }, profile.contact && `Контакты: ${profile.contact}`),
+        el("p", { class: "row__meta" }, `Рейтинг продавца: ${rating(profile.rating, profile.votes)}${profile.votes > 0 ? ` (оценок: ${profile.votes})` : ""}`)
       ),
       el("a", { class: "button button--secondary", href: "/pages/settings.html" }, "Редактировать профиль")
     ),
@@ -54,7 +56,9 @@ try {
       "div",
       { class: "counters" },
       counter(profile.purchases, "Мои покупки", "/pages/purchases.html"),
-      counter(profile.materials, "Мои материалы", "/pages/sales.html")
+      counter(profile.materials, "Мои материалы", "/pages/sales.html"),
+      counter(points(profile.earned), "Заработано с продаж", "/pages/sales.html"),
+      counter(points(profile.spent), "Потрачено на покупки", "/pages/purchases.html")
     ),
     el("h2", {}, "История баллов"),
     el("ul", { class: "rows" }, history.map(historyRow))

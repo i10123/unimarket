@@ -65,21 +65,19 @@
   min-width: 220px;
 }
 
-/* Профиль автора: большая буква, имя, плашки и контакт. */
+/* Профиль автора: буква, имя с контактом слева, цифры справа. */
 .author {
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   gap: 16px 24px;
   padding: 28px;
-  background: linear-gradient(135deg, var(--green-background), var(--surface));
 }
 
 .author .avatar {
   width: 88px;
   height: 88px;
   border-radius: 24px;
-  background: var(--surface);
-  box-shadow: var(--shadow);
   font-size: 36px;
 }
 
@@ -90,19 +88,20 @@
   min-width: 0;
 }
 
-.author__chips {
+.author__stats {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0;
+  gap: 32px;
+  margin: 0 0 0 auto;
 }
 
-.author__chips span {
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: var(--surface);
+.author__stats dt {
+  font: 500 24px var(--font-heading);
+}
+
+.author__stats dd {
+  margin: 0;
+  color: var(--text-muted);
   font-size: 13px;
-  font-weight: 600;
 }
 
 .author__contact {

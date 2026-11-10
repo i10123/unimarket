@@ -49,7 +49,7 @@ function buyBlock(material, purchase, own) {
       { class: "row__meta" },
       "Автор: ",
       el("a", { class: "file-link", href: `/pages/author.html?id=${material.author_id}` }, material.author_name),
-      material.author_votes > 0 && ` · ${rating(material.author_rating, material.author_votes)}`
+      ` · ${rating(material.author_rating, material.author_votes)}`
     ),
     material.author_contact && el("p", { class: "row__meta" }, `Связаться с автором: ${material.author_contact}`)
   );

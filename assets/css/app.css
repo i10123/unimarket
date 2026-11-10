@@ -175,27 +175,13 @@
 }
 
 .purchase__seller {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   font-size: 14px;
 }
 
-.purchase__seller .avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: rgb(255 255 255 / 65%);
-  font-size: 13px;
-}
-
-.purchase__box {
+.purchase__files {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: rgb(255 255 255 / 60%);
 }
 
 .purchase__contact {
@@ -277,8 +263,14 @@
 
 .counters {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+}
+
+@media (min-width: 1200px) {
+  .counters {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .counters strong {
