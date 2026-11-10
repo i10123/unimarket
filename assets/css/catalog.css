@@ -1,22 +1,123 @@
+/* Каталог, избранное и профиль автора: сетка карточек и фильтры. */
 .catalog {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  align-items: start;
   gap: 24px;
-  padding-block: 32px;
 }
 
-.catalog__account {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 24px;
+/* Поиск занимает всю ширину над фильтрами и результатами. */
+.catalog__search {
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 52px;
+  padding: 8px 22px;
+  border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--surface);
-  overflow-wrap: anywhere;
+  font: 400 15px var(--font-text);
+}
+
+.catalog__search:focus {
+  border-color: var(--text);
+  outline: none;
+}
+
+.filters .button {
+  min-height: 40px;
+}
+
+.catalog__results {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.catalog__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--text-muted);
+}
+
+.catalog__bar .field {
+  width: 200px;
+}
+
+.catalog__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* Описание в карточке обрезается тремя строками. */
+.catalog__grid .material-card__content p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.catalog__more {
+  align-self: center;
+  min-width: 220px;
+}
+
+/* Профиль автора: имя и цифры. */
+.author {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 48px;
+}
+
+.author__numbers {
+  display: flex;
+  gap: 40px;
+}
+
+.author__numbers strong {
+  display: block;
+  font: 500 24px var(--font-heading);
+}
+
+@media (max-width: 1199.98px) {
+  .catalog {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filters h2,
+  .filters .button {
+    grid-column: 1 / -1;
+  }
+
+  .catalog__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 767.98px) {
-  .catalog h1 {
-    font-size: 28px;
+  .filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .catalog__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .catalog__bar {
+    flex-wrap: wrap;
+  }
+
+  .catalog__search {
+    font-size: 16px;
   }
 }

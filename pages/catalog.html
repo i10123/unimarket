@@ -3,29 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/assets/icons/logo.svg">
   <title>Каталог — УниМаркет</title>
   <link rel="stylesheet" href="../assets/css/base.css">
+  <link rel="stylesheet" href="../assets/css/forms.css">
+  <link rel="stylesheet" href="../assets/css/cards.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
   <link rel="stylesheet" href="../assets/css/catalog.css">
-  <script src="../assets/js/account.js" defer></script>
+  <script type="module" src="../assets/js/catalog.js"></script>
 </head>
 <body>
-  <header class="site-header">
-    <div class="site-header__inner container">
-      <a class="brand" href="/pages/catalog.html">
-        <img src="../assets/icons/logo.svg" width="64" height="64" alt="">
-        <span>УниМаркет</span>
-      </a>
-      <button class="button button--secondary" id="logout" type="button" disabled>Выйти</button>
-    </div>
-  </header>
-  <main class="container catalog" id="main">
-    <h1>Учебные материалы</h1>
-    <section class="catalog__account" aria-label="Аккаунт">
-      <p>Имя на сайте: <strong id="display-name">…</strong> · Логин: <strong id="login">…</strong></p>
-      <p>Баланс: <strong id="balance">…</strong> баллов · В резерве: <strong id="reserve">…</strong></p>
-    </section>
-    <p id="status" role="status">Загружаем данные аккаунта…</p>
-    <noscript><p>Включи JavaScript для загрузки аккаунта и выхода.</p></noscript>
+  <header class="site-header"></header>
+  <main class="container page">
+    <h1>Каталог</h1>
+    <!-- Поиск, фильтры и сортировка в одной форме: так события полей доходят до неё. -->
+    <form class="catalog" id="filters" aria-label="Поиск и фильтры">
+      <input class="catalog__search" type="search" name="q" placeholder="Поиск материалов" aria-label="Поиск материалов" maxlength="100">
+      <div class="panel filters">
+        <h2>Фильтры</h2>
+        <div class="field">
+          <label for="subject">Предмет</label>
+          <select id="subject" name="subject"><option value="">Все предметы</option></select>
+        </div>
+        <div class="field">
+          <label for="course">Курс</label>
+          <select id="course" name="course"><option value="">Все курсы</option></select>
+        </div>
+        <div class="field">
+          <label for="type">Тип материала</label>
+          <select id="type" name="type"><option value="">Все материалы</option></select>
+        </div>
+        <div class="field">
+          <label for="min">Цена в баллах</label>
+          <div class="field-row">
+            <input id="min" name="min" type="number" min="0" placeholder="От" aria-label="Цена от">
+            <input name="max" type="number" min="0" placeholder="До" aria-label="Цена до">
+          </div>
+        </div>
+        <button class="button button--secondary" type="reset">Сбросить всё</button>
+      </div>
+      <section class="catalog__results" aria-label="Материалы">
+        <div class="catalog__bar">
+          <p id="total" role="status"></p>
+          <div class="field">
+            <select name="sort" aria-label="Сортировка">
+              <option value="">Сначала новые</option>
+              <option value="price_asc">Сначала дешевле</option>
+              <option value="price_desc">Сначала дороже</option>
+            </select>
+          </div>
+        </div>
+        <div class="catalog__grid" id="grid"></div>
+        <p class="empty" id="status" role="status" hidden></p>
+        <button class="button button--secondary catalog__more" id="more" type="button" hidden>Показать ещё</button>
+      </section>
+    </form>
   </main>
+  <footer class="site-footer"></footer>
 </body>
 </html>
