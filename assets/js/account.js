@@ -1,22 +1,22 @@
 // Каталог: показывает имя, логин и остатки вошедшего пользователя, кнопка «Выйти».
 
-const soobshenie = document.getElementById("status");
-const vyitiButton = document.getElementById("viyti");
+const message = document.getElementById("status");
+const logoutButton = document.getElementById("logout");
 
 // Обычный Error создаём сами из ответа сервера; у сбоя сети текст английский.
-function tekstOshibki(error, zapasnoy) {
-  return (error.name === "Error" && error.message) || zapasnoy;
+function getErrorMessage(error, fallbackMessage) {
+  return (error.name === "Error" && error.message) || fallbackMessage;
 }
 
-function pokazatAkkaunt(user) {
-  document.getElementById("imya").textContent = user.display_name;
+function displayAccount(user) {
+  document.getElementById("display-name").textContent = user.display_name;
   document.getElementById("login").textContent = user.login;
   document.getElementById("balance").textContent = user.available;
   document.getElementById("reserve").textContent = user.reserved;
 }
 
-async function vyiti(csrf) {
-  vyitiButton.disabled = true;
+async function logout(csrf) {
+  logoutButton.disabled = true;
   try {
     const response = await fetch("/api/auth", {
       method: "POST",
@@ -32,12 +32,12 @@ async function vyiti(csrf) {
     }
     location.replace("/pages/auth/login.html");
   } catch (error) {
-    soobshenie.textContent = tekstOshibki(error, "Не удалось выйти. Попробуй снова.");
-    vyitiButton.disabled = false;
+    message.textContent = getErrorMessage(error, "Не удалось выйти. Попробуй снова.");
+    logoutButton.disabled = false;
   }
 }
 
-async function zagruzitAkkaunt() {
+async function loadAccount() {
   try {
     const response = await fetch("/api/auth");
     const data = await response.json();
@@ -50,15 +50,15 @@ async function zagruzitAkkaunt() {
       return;
     }
 
-    pokazatAkkaunt(data.user);
-    soobshenie.textContent = "Каталог пока пуст.";
-    vyitiButton.disabled = false;
-    vyitiButton.addEventListener("click", () => {
-      vyiti(data.csrf);
+    displayAccount(data.user);
+    message.textContent = "Каталог пока пуст.";
+    logoutButton.disabled = false;
+    logoutButton.addEventListener("click", () => {
+      logout(data.csrf);
     });
   } catch (error) {
-    soobshenie.textContent = tekstOshibki(error, "Сервер недоступен. Обнови страницу.");
+    message.textContent = getErrorMessage(error, "Сервер недоступен. Обнови страницу.");
   }
 }
 
-zagruzitAkkaunt();
+loadAccount();

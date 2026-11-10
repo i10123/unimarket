@@ -9,20 +9,19 @@
   <script src="../assets/js/account.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">Перейти к содержимому</a>
   <header class="site-header">
-    <div class="site-header__vnutri container">
+    <div class="site-header__inner container">
       <a class="brand" href="/pages/catalog.html">
         <img src="../assets/icons/logo.svg" width="64" height="64" alt="">
         <span>УниМаркет</span>
       </a>
-      <button class="button button--secondary" id="viyti" type="button" disabled>Выйти</button>
+      <button class="button button--secondary" id="logout" type="button" disabled>Выйти</button>
     </div>
   </header>
-  <main class="container katalog" id="main">
+  <main class="container catalog" id="main">
     <h1>Учебные материалы</h1>
-    <section class="katalog__akkaunt" aria-label="Аккаунт">
-      <p>Имя на сайте: <strong id="imya">…</strong> · Логин: <strong id="login">…</strong></p>
+    <section class="catalog__account" aria-label="Аккаунт">
+      <p>Имя на сайте: <strong id="display-name">…</strong> · Логин: <strong id="login">…</strong></p>
       <p>Баланс: <strong id="balance">…</strong> баллов · В резерве: <strong id="reserve">…</strong></p>
     </section>
     <p id="status" role="status">Загружаем данные аккаунта…</p>

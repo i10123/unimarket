@@ -1,4 +1,4 @@
-.dostup {
+.auth {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6,7 +6,7 @@
   padding-block: 32px 40px;
 }
 
-.dostup__ekran {
+.auth__screen {
   display: none;
   flex-direction: column;
   width: min(460px, 100%);
@@ -14,196 +14,196 @@
   scroll-margin-top: 120px;
 }
 
-.dostup__ekran--otkryt,
-html:not([data-ekran]) .dostup__ekran--vhod,
-[data-ekran="vhod"] #vhod,
-[data-ekran="registraciya"] #registraciya {
+.auth__screen--open,
+html:not([data-screen]) .auth__screen--login,
+[data-screen="login"] #login,
+[data-screen="register"] #register {
   display: flex;
 }
 
-.dostup h1 {
+.auth h1 {
   font-size: 28px;
   text-align: center;
 }
 
-.dostup__zagolovok {
+.auth__heading {
   font-size: 20px;
 }
 
 /* Заголовок карточки и номер шага в одну строку. */
-.dostup__shapka {
+.auth__header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
 }
 
-.dostup__shag,
-.pole small {
-  color: var(--tekst-vtorichniy);
+.auth__step,
+.field small {
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 400;
 }
 
-.dostup__tekst {
-  color: var(--tekst-vtorichniy);
+.auth__text {
+  color: var(--text-muted);
   font-weight: 400;
 }
 
 /* Показываем только текущий шаг регистрации. */
-[data-shag="1"] #shag-profil,
-[data-shag="2"] #shag-dostup {
+[data-step="1"] #profile-step,
+[data-step="2"] #credentials-step {
   display: none;
 }
 
-.dostup__progress {
+.auth__progress {
   display: flex;
   gap: 6px;
 }
 
-.dostup__progress span {
+.auth__progress span {
   flex: 1;
   height: 6px;
   border-radius: 3px;
-  background: var(--granica);
+  background: var(--border);
 }
 
-.dostup__progress .dostup__progress-chast--aktiv {
-  background: var(--temniy);
+.auth__progress .auth__progress-part--active {
+  background: var(--dark);
 }
 
-.dostup__nazad {
+.auth__back {
   align-self: flex-start;
-  color: var(--tekst-vtorichniy);
+  color: var(--text-muted);
   font-weight: 400;
 }
 
-.dostup__forma {
+.auth__form {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 24px;
   border-radius: 16px;
-  background: var(--poverhnost);
+  background: var(--surface);
   box-shadow: 0 12px 32px rgb(32 44 35 / 6%);
   font-size: 14px;
   font-weight: 600;
-  animation: poyavlenie 200ms ease-out;
+  animation: appear 200ms ease-out;
 }
 
-@keyframes poyavlenie {
+@keyframes appear {
   from {
     opacity: 0;
     transform: translateY(8px);
   }
 }
 
-.dostup__forma a,
-.dostup__nav a {
+.auth__form a,
+.auth__nav a {
   text-underline-offset: 3px;
 }
 
-.dostup__forma a:hover,
-.dostup__forma a:focus-visible,
-.dostup__nav a {
+.auth__form a:hover,
+.auth__form a:focus-visible,
+.auth__nav a {
   text-decoration: underline;
 }
 
 /* Ссылки под кнопкой входа: по краям одной строки; на узком экране переносятся. */
-.dostup__ssylki {
+.auth__links {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 8px 16px;
 }
 
-.pole {
+.field {
   display: flex;
   flex-direction: column;
   min-width: 0;
   gap: 8px;
 }
 
-.pole input,
-.pole select {
+.field input,
+.field select {
   width: 100%;
   min-width: 0;
   height: 44px;
   padding: 8px 16px;
-  border: 1px solid var(--granica);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  background-color: var(--poverhnost);
-  color: var(--tekst);
-  font: 400 15px/1.4 var(--shrift-tekst);
+  background-color: var(--surface);
+  color: var(--text);
+  font: 400 15px/1.4 var(--backgroundt-text);
 }
 
-.pole select {
+.field select {
   padding-right: 44px;
-  background: var(--poverhnost) url("../icons/chevron-down.svg") no-repeat right 16px center;
+  background: var(--surface) url("../icons/chevron-down.svg") no-repeat right 16px center;
   appearance: none;
   cursor: pointer;
 }
 
-.pole input:focus,
-.pole select:focus {
-  border-color: var(--tekst);
+.field input:focus,
+.field select:focus {
+  border-color: var(--text);
   outline: none;
 }
 
-.pole__zvezda {
-  color: var(--oshibka);
+.field__required {
+  color: var(--error);
 }
 
-.pole__oshibka {
-  color: var(--oshibka);
+.field__error {
+  color: var(--error);
   font-size: 12px;
   font-weight: 400;
 }
 
-.pole input[aria-invalid="true"],
-.pole select[aria-invalid="true"] {
-  border-color: var(--oshibka);
+.field input[aria-invalid="true"],
+.field select[aria-invalid="true"] {
+  border-color: var(--error);
 }
 
-.pole__soglasie {
+.field__consent {
   display: flex;
   align-items: center;
   gap: 8px;
   font-weight: 400;
 }
 
-.pole__soglasie input {
+.field__consent input {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
   padding: 0;
-  accent-color: var(--temniy);
+  accent-color: var(--dark);
   cursor: pointer;
 }
 
-.pole__soglasie input[aria-invalid="true"] {
-  outline: 2px solid var(--oshibka);
+.field__consent input[aria-invalid="true"] {
+  outline: 2px solid var(--error);
   outline-offset: 1px;
 }
 
-.pole__soglasie a {
+.field__consent a {
   text-decoration: underline;
 }
 
-.pole input::placeholder {
-  color: var(--tekst-vtorichniy);
+.field input::placeholder {
+  color: var(--text-muted);
   opacity: 1;
 }
 
-.pole__parol {
+.field__password {
   position: relative;
 }
 
-.pole__parol input {
+.field__password input {
   padding-right: 56px;
 }
 
-.pole__pokaz {
+.field__toggle {
   position: absolute;
   top: 0;
   right: 0;
@@ -218,67 +218,67 @@ html:not([data-ekran]) .dostup__ekran--vhod,
   cursor: pointer;
 }
 
-.pole__pokaz:focus-visible {
+.field__toggle:focus-visible {
   outline: none;
 }
 
-.pole__pokaz[aria-pressed="true"]::after {
+.field__toggle[aria-pressed="true"]::after {
   content: "";
   position: absolute;
   width: 20px;
   height: 1.5px;
-  background: var(--tekst-vtorichniy);
+  background: var(--text-muted);
   transform: rotate(45deg);
 }
 
-.dostup__nav {
+.auth__nav {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
-  color: var(--tekst-vtorichniy);
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 500;
 }
 
-.dostup__primechanie {
+.auth__note {
   max-width: 520px;
-  color: var(--tekst-vtorichniy);
+  color: var(--text-muted);
   font-size: 12px;
   text-align: center;
 }
 
-.dostup__status {
-  color: var(--oshibka);
+.auth__status {
+  color: var(--error);
   font-weight: 400;
 }
 
-.dostup .button:disabled {
+.auth .button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dostup__forma {
+  .auth__form {
     animation: none;
   }
 }
 
 @media (max-width: 767.98px) {
-  .dostup {
+  .auth {
     padding-block: 24px 32px;
   }
 
-  .dostup h1 {
+  .auth h1 {
     font-size: clamp(24px, 6vw, 28px);
   }
 
-  .dostup__forma {
+  .auth__form {
     padding: 20px 16px;
   }
 
-  .pole input,
-  .pole select {
+  .field input,
+  .field select {
     font-size: 16px;
   }
 }

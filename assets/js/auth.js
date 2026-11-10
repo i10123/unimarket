@@ -1,195 +1,195 @@
 // Страница входа и регистрации: выбор экрана и шага, проверка полей, показ пароля и отправка в PHP.
 // Файл подключён в head без defer: экран выбирается до отрисовки, без мигания.
 
-const VTOROY_SHAG = "#registraciya-2";
+const SECOND_STEP = "#register-2";
 
 let csrf = "";
 // Второй шаг открывается только после проверки первого.
-let pervyyShagProyden = false;
+let firstStepComplete = false;
 
 // Экран и шаг задаёт адрес, поэтому «назад» в браузере и на мыши ходит между шагами.
-function obnovitEkran() {
-  if (location.hash === VTOROY_SHAG && !pervyyShagProyden) {
-    history.replaceState(null, "", "#registraciya");
+function updateScreen() {
+  if (location.hash === SECOND_STEP && !firstStepComplete) {
+    history.replaceState(null, "", "#register");
   }
 
-  const registraciya = location.hash === "#registraciya" || location.hash === VTOROY_SHAG;
-  const ekran = registraciya ? "registraciya" : "vhod";
-  document.documentElement.dataset.ekran = ekran;
-  document.documentElement.dataset.shag = location.hash === VTOROY_SHAG ? "2" : "1";
+  const isRegister = location.hash === "#register" || location.hash === SECOND_STEP;
+  const screen = isRegister ? "register" : "login";
+  document.documentElement.dataset.screen = screen;
+  document.documentElement.dataset.step = location.hash === SECOND_STEP ? "2" : "1";
 
-  const perehod = document.querySelector(".skip-link");
-  if (perehod) {
-    perehod.href = `#${ekran}`;
+  const skipLink = document.querySelector(".skip-link");
+  if (skipLink) {
+    skipLink.href = `#${screen}`;
   }
 }
 
-function pokazatOshibku(forma, tekst) {
-  const status = forma.querySelector("[role=status]");
-  status.textContent = tekst;
+function showError(form, message) {
+  const status = form.querySelector("[role=status]");
+  status.textContent = message;
   status.hidden = false;
 }
 
-function pokazatOshibkuPolya(pole, tekst) {
-  const blok = pole.closest(".pole");
-  let oshibka = blok.querySelector(".pole__oshibka");
+function showFieldError(field, message) {
+  const fieldContainer = field.closest(".field");
+  let errorMessage = fieldContainer.querySelector(".field__error");
 
-  if (!oshibka) {
-    oshibka = document.createElement("p");
-    oshibka.className = "pole__oshibka";
-    oshibka.id = `${pole.id}-oshibka`;
-    blok.append(oshibka);
-    const opisanie = pole.getAttribute("aria-describedby");
-    pole.setAttribute("aria-describedby", opisanie ? `${opisanie} ${oshibka.id}` : oshibka.id);
+  if (!errorMessage) {
+    errorMessage = document.createElement("p");
+    errorMessage.className = "field__error";
+    errorMessage.id = `${field.id}-error`;
+    fieldContainer.append(errorMessage);
+    const description = field.getAttribute("aria-describedby");
+    field.setAttribute("aria-describedby", description ? `${description} ${errorMessage.id}` : errorMessage.id);
   }
 
-  oshibka.textContent = tekst;
-  oshibka.hidden = false;
-  pole.setAttribute("aria-invalid", "true");
+  errorMessage.textContent = message;
+  errorMessage.hidden = false;
+  field.setAttribute("aria-invalid", "true");
 }
 
-function ubratOshibkuPolya(pole) {
-  const oshibka = pole.closest(".pole").querySelector(".pole__oshibka");
-  if (oshibka) {
-    oshibka.hidden = true;
+function clearFieldError(field) {
+  const errorMessage = field.closest(".field").querySelector(".field__error");
+  if (errorMessage) {
+    errorMessage.hidden = true;
   }
-  pole.removeAttribute("aria-invalid");
+  field.removeAttribute("aria-invalid");
 }
 
 // Подсказки браузера выключены (novalidate), тексты ошибок лежат в data-атрибутах полей.
-function proveritFormu(forma) {
-  let pervoePole = null;
+function validateForm(form) {
+  let firstInvalidField = null;
 
-  forma.querySelectorAll("input, select").forEach((pole) => {
-    ubratOshibkuPolya(pole);
-    if (!pole.validity.valid) {
-      pokazatOshibkuPolya(pole, pole.validity.valueMissing ? pole.dataset.pusto : pole.dataset.format);
-      pervoePole ??= pole;
+  form.querySelectorAll("input, select").forEach((field) => {
+    clearFieldError(field);
+    if (!field.validity.valid) {
+      showFieldError(field, field.validity.valueMissing ? field.dataset.requiredMessage : field.dataset.format);
+      firstInvalidField ??= field;
     }
   });
 
-  const povtor = forma.elements.repeat;
-  if (povtor && povtor.value && povtor.value !== forma.elements.password.value) {
-    pokazatOshibkuPolya(povtor, "Пароли не совпадают.");
-    pervoePole ??= povtor;
+  const confirmPassword = form.elements.repeat;
+  if (confirmPassword && confirmPassword.value && confirmPassword.value !== form.elements.password.value) {
+    showFieldError(confirmPassword, "Пароли не совпадают.");
+    firstInvalidField ??= confirmPassword;
   }
 
-  if (pervoePole) {
-    pervoePole.focus();
+  if (firstInvalidField) {
+    firstInvalidField.focus();
   }
-  return !pervoePole;
+  return !firstInvalidField;
 }
 
 // Кнопка-глаз переключает поле между password и text.
-function pereklyuchitParol(button) {
-  const pole = document.getElementById(button.getAttribute("aria-controls"));
-  const pokazat = pole.type === "password";
+function togglePassword(button) {
+  const field = document.getElementById(button.getAttribute("aria-controls"));
+  const showPassword = field.type === "password";
 
-  pole.type = pokazat ? "text" : "password";
-  button.setAttribute("aria-pressed", String(pokazat));
-  button.setAttribute("aria-label", pokazat ? "Скрыть пароль" : "Показать пароль");
+  field.type = showPassword ? "text" : "password";
+  button.setAttribute("aria-pressed", String(showPassword));
+  button.setAttribute("aria-label", showPassword ? "Скрыть пароль" : "Показать пароль");
 }
 
-async function otpravit(dannye) {
+async function sendRequest(payload) {
   const response = await fetch("/api/auth", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "X-CSRF-Token": csrf,
     },
-    body: JSON.stringify(dannye),
+    body: JSON.stringify(payload),
   });
   const data = await response.json();
   if (!response.ok) {
-    const oshibka = new Error(data.error);
-    oshibka.status = response.status;
-    throw oshibka;
+    const errorMessage = new Error(data.error);
+    errorMessage.status = response.status;
+    throw errorMessage;
   }
 }
 
-function otkrytKatalog() {
+function openCatalog() {
   location.replace("/pages/catalog.html");
 }
 
-async function voyti(forma) {
-  await otpravit({
+async function logIn(form) {
+  await sendRequest({
     action: "login",
-    login: forma.elements.login.value,
-    password: forma.elements.password.value,
+    login: form.elements.login.value,
+    password: form.elements.password.value,
   });
-  otkrytKatalog();
+  openCatalog();
 }
 
-async function proveritLogin(forma) {
-  await otpravit({ action: "check_login", login: forma.elements.login.value });
-  pervyyShagProyden = true;
-  location.hash = VTOROY_SHAG;
+async function checkLogin(form) {
+  await sendRequest({ action: "check_login", login: form.elements.login.value });
+  firstStepComplete = true;
+  location.hash = SECOND_STEP;
 }
 
-async function zaregistrirovatsya(sProfilem) {
-  const dostup = document.getElementById("shag-dostup").elements;
-  const profil = Object.fromEntries(new FormData(document.getElementById("shag-profil")));
+async function register(includeProfile) {
+  const credentials = document.getElementById("credentials-step").elements;
+  const profile = Object.fromEntries(new FormData(document.getElementById("profile-step")));
 
-  await otpravit({
+  await sendRequest({
     action: "register",
-    login: dostup.login.value,
-    password: dostup.password.value,
-    rules: dostup.rules.checked,
-    ...(sProfilem ? profil : {}),
+    login: credentials.login.value,
+    password: credentials.password.value,
+    rules: credentials.rules.checked,
+    ...(includeProfile ? profile : {}),
   });
-  otkrytKatalog();
+  openCatalog();
 }
 
 // Общая обёртка отправки: блокирует кнопки и показывает ошибку.
-async function vypolnit(forma, deystvie) {
-  const knopki = forma.querySelectorAll("button:not([data-parol])");
+async function runAction(form, action) {
+  const buttons = form.querySelectorAll("button:not([data-password-toggle])");
 
-  knopki.forEach((button) => {
+  buttons.forEach((button) => {
     button.disabled = true;
   });
-  forma.setAttribute("aria-busy", "true");
-  forma.querySelector("[role=status]").hidden = true;
+  form.setAttribute("aria-busy", "true");
+  form.querySelector("[role=status]").hidden = true;
 
   try {
-    await deystvie();
+    await action();
   } catch (error) {
     if (error.status === 409) {
       // Логин заняли, пока заполнялся второй шаг: возвращаем к полю логина.
-      const pole = document.getElementById("registraciya-login");
-      location.hash = "#registraciya";
-      pokazatOshibkuPolya(pole, error.message);
-      pole.focus();
+      const field = document.getElementById("register-login");
+      location.hash = "#register";
+      showFieldError(field, error.message);
+      field.focus();
       return;
     }
     // Обычный Error создаём сами из ответа сервера; у сбоя сети текст английский.
-    const svoyTekst = error.name === "Error" && error.message;
-    pokazatOshibku(forma, svoyTekst || "Сервер недоступен. Попробуй ещё раз.");
+    const customMessage = error.name === "Error" && error.message;
+    showError(form, customMessage || "Сервер недоступен. Попробуй ещё раз.");
   } finally {
-    knopki.forEach((button) => {
+    buttons.forEach((button) => {
       button.disabled = false;
     });
-    forma.removeAttribute("aria-busy");
+    form.removeAttribute("aria-busy");
   }
 }
 
-const DEYSTVIYA = {
-  login: voyti,
-  check_login: proveritLogin,
-  register: () => zaregistrirovatsya(true),
+const ACTIONS = {
+  login: logIn,
+  check_login: checkLogin,
+  register: () => register(true),
 };
 
-function otpravitFormu(sobytie) {
-  sobytie.preventDefault();
-  const forma = sobytie.currentTarget;
+function submitForm(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
 
-  if (proveritFormu(forma)) {
-    vypolnit(forma, () => DEYSTVIYA[forma.dataset.action](forma));
+  if (validateForm(form)) {
+    runAction(form, () => ACTIONS[form.dataset.action](form));
   }
 }
 
 // Получаем CSRF-токен; без него сервер не примет форму, поэтому кнопки
 // включаются только после ответа.
-async function podgotovitFormy(formy) {
+async function initializeForms(forms) {
   try {
     const response = await fetch("/api/auth");
     if (!response.ok) {
@@ -197,54 +197,54 @@ async function podgotovitFormy(formy) {
     }
     const data = await response.json();
     if (data.user) {
-      otkrytKatalog();
+      openCatalog();
       return;
     }
     csrf = data.csrf;
-    document.querySelectorAll(".dostup__forma button:not([data-parol])").forEach((button) => {
+    document.querySelectorAll(".auth__form button:not([data-password-toggle])").forEach((button) => {
       button.disabled = false;
     });
   } catch {
-    const tekst = "Сервер недоступен. Обнови страницу позже.";
-    formy.forEach((forma) => {
-      pokazatOshibku(forma, tekst);
+    const message = "Сервер недоступен. Обнови страницу позже.";
+    forms.forEach((form) => {
+      showError(form, message);
     });
   }
 }
 
-obnovitEkran();
+updateScreen();
 
-window.addEventListener("hashchange", (sobytie) => {
-  obnovitEkran();
+window.addEventListener("hashchange", (event) => {
+  updateScreen();
   window.scrollTo(0, 0);
 
-  if (location.hash === VTOROY_SHAG) {
-    document.getElementById("profil-imya").focus();
-  } else if (sobytie.oldURL.endsWith(VTOROY_SHAG)) {
-    document.getElementById("registraciya-login").focus();
+  if (location.hash === SECOND_STEP) {
+    document.getElementById("profile-first-name").focus();
+  } else if (event.oldURL.endsWith(SECOND_STEP)) {
+    document.getElementById("register-login").focus();
   }
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  const formy = document.querySelectorAll(".dostup__forma");
+  const forms = document.querySelectorAll(".auth__form");
 
-  document.querySelectorAll("[data-parol]").forEach((button) => {
+  document.querySelectorAll("[data-password-toggle]").forEach((button) => {
     button.addEventListener("click", () => {
-      pereklyuchitParol(button);
+      togglePassword(button);
     });
   });
-  formy.forEach((forma) => {
-    forma.addEventListener("submit", otpravitFormu);
+  forms.forEach((form) => {
+    form.addEventListener("submit", submitForm);
     // Ошибка поля исчезает, как только его начали исправлять.
-    forma.addEventListener("input", (sobytie) => {
-      ubratOshibkuPolya(sobytie.target);
+    form.addEventListener("input", (event) => {
+      clearFieldError(event.target);
     });
   });
 
-  const profil = document.getElementById("shag-profil");
-  document.getElementById("propustit").addEventListener("click", () => {
-    vypolnit(profil, () => zaregistrirovatsya(false));
+  const profile = document.getElementById("profile-step");
+  document.getElementById("skip-profile").addEventListener("click", () => {
+    runAction(profile, () => register(false));
   });
 
-  podgotovitFormy(formy);
+  initializeForms(forms);
 });

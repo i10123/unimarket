@@ -36,13 +36,13 @@
   gap: 24px;
   padding: 32px;
   border-radius: 16px;
-  background: var(--temniy);
-  color: var(--poverhnost);
+  background: var(--dark);
+  color: var(--surface);
 }
 
 .welcome__content,
 .welcome__nagrada,
-.publikaciya-banner__content {
+.publish-banner__content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -64,15 +64,15 @@
   align-self: center;
   padding: 20px 24px;
   border-radius: 20px;
-  background: var(--akcent);
-  color: var(--tekst);
+  background: var(--accent);
+  color: var(--text);
   font-size: 14px;
   font-weight: 600;
   text-align: center;
 }
 
 .welcome__points {
-  font-family: var(--shrift-zagolovok);
+  font-family: var(--backgroundt-heading);
   font-size: 64px;
   font-weight: 500;
   line-height: 1;
@@ -96,22 +96,22 @@
 }
 
 .material-card--green {
-  --metka: #c7e083;
-  background: var(--green-fon);
+  --label: #c7e083;
+  background: var(--green-background);
 }
 
 .material-card--blue {
-  --metka: #a9cdee;
-  background: var(--blue-fon);
+  --label: #a9cdee;
+  background: var(--blue-background);
 }
 
-.material-card--lavandoviy {
-  --metka: #c5b3ef;
-  background: var(--lavandoviy-fon);
+.material-card--purple {
+  --label: #c5b3ef;
+  background: var(--purple-background);
 }
 
-.material-card__verh,
-.material-card__niz {
+.material-card__top,
+.material-card__bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -138,7 +138,7 @@
 }
 
 .material-card__meta span:first-child {
-  background: var(--metka);
+  background: var(--label);
 }
 
 /* Ссылка растянута на всю карточку, поэтому нажимается любое её место. */
@@ -154,7 +154,7 @@
 }
 
 .material-card__link:focus-visible::after {
-  outline: 2px solid var(--tekst);
+  outline: 2px solid var(--text);
   outline-offset: 2px;
 }
 
@@ -192,7 +192,7 @@
 .material-card__author {
   /* Полупрозрачный тёмный остаётся читаемым на всех цветах карточек. */
   color: rgb(25 34 28 / 72%);
-  font-family: var(--shrift-kartochka);
+  font-family: var(--backgroundt-card);
 }
 
 .material-card__price {
@@ -205,7 +205,7 @@
   line-height: 22px;
 }
 
-.publikaciya-banner {
+.publish-banner {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 260px;
   align-items: center;
@@ -213,14 +213,14 @@
   gap: 24px;
   padding: 24px;
   border-radius: 16px;
-  background: var(--green-fon);
+  background: var(--green-background);
 }
 
-.publikaciya-banner__content {
+.publish-banner__content {
   gap: 4px;
 }
 
-.publikaciya-banner h2 {
+.publish-banner h2 {
   font-size: 18px;
 }
 
@@ -236,7 +236,7 @@
 
 .faq__item {
   border-radius: 12px;
-  background: var(--poverhnost);
+  background: var(--surface);
 }
 
 .faq__item summary {
@@ -259,7 +259,7 @@
 .faq__item summary::after {
   content: "+";
   flex-shrink: 0;
-  color: var(--tekst-vtorichniy);
+  color: var(--text-muted);
   font-size: 22px;
   font-weight: 400;
   line-height: 1;
@@ -277,16 +277,16 @@
 .faq__item p {
   margin-top: 6px;
   padding: 0 24px 16px;
-  color: var(--tekst-vtorichniy);
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .site-footer {
-  background: var(--temniy);
-  color: var(--poverhnost);
+  background: var(--dark);
+  color: var(--surface);
 }
 
-.site-footer__vnutri {
+.site-footer__inner {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -306,11 +306,11 @@
 }
 
 .welcome :focus-visible {
-  outline-color: var(--akcent);
+  outline-color: var(--accent);
 }
 
 .site-footer :focus-visible {
-  outline-color: var(--poverhnost);
+  outline-color: var(--surface);
 }
 
 @media (hover: hover) {
@@ -343,8 +343,8 @@
   .faq,
   .welcome,
   .material-grid,
-  .publikaciya-banner,
-  .site-footer__vnutri {
+  .publish-banner,
+  .site-footer__inner {
     display: flex;
     flex-direction: column;
   }
@@ -354,7 +354,7 @@
   }
 
   .welcome,
-  .publikaciya-banner {
+  .publish-banner {
     align-items: stretch;
     gap: 16px;
     padding: 20px;
@@ -366,7 +366,7 @@
   }
 
   .welcome .button,
-  .publikaciya-banner .button {
+  .publish-banner .button {
     width: 100%;
     min-width: 0;
   }
@@ -390,7 +390,7 @@
     min-height: 0;
   }
 
-  .material-card__verh {
+  .material-card__top {
     min-height: 24px;
     padding-right: 40px;
   }
@@ -417,7 +417,7 @@
     padding-inline: 16px;
   }
 
-  .site-footer__vnutri {
+  .site-footer__inner {
     gap: 16px;
     padding-block: 24px;
     text-align: center;
@@ -428,7 +428,7 @@
   }
 
   /* В шапке вместо текста иконки входа и регистрации. */
-  .site-header__vnutri,
+  .site-header__inner,
   .site-header__actions {
     gap: 8px;
   }

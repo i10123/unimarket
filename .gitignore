@@ -1,23 +1,17 @@
-# Локальные настройки с паролем БД; создаёт scripts/init-db.php.
 /config/local.php
 
-# Сессии, лимиты попыток и загруженные файлы; папки создаёт backend/bootstrap.php.
 /storage/
 
-# Тесты хранятся только локально.
 /tests/
 
-# Логи.
 *.log
 
-# Редакторы.
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
 
-# Файлы операционных систем.
 .DS_Store
 Thumbs.db
 desktop.ini

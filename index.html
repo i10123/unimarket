@@ -9,9 +9,8 @@
   <link rel="stylesheet" href="assets/css/landing.css">
 </head>
 <body>
-  <a class="skip-link" href="#main">Перейти к содержимому</a>
   <header class="site-header">
-    <div class="site-header__vnutri container">
+    <div class="site-header__inner container">
       <a class="brand" href="index.html" aria-label="УниМаркет — главная">
         <img src="assets/icons/logo.svg" width="64" height="64" alt="">
         <span>УниМаркет</span>
@@ -21,20 +20,20 @@
           <img src="assets/icons/login.svg" width="24" height="24" alt="">
           <span>Войти</span>
         </a>
-        <a class="button button--main" href="pages/auth/login.html#registraciya" aria-label="Создать аккаунт" title="Создать аккаунт">
+        <a class="button button--main" href="pages/auth/login.html#register" aria-label="Создать аккаунт" title="Создать аккаунт">
           <img src="assets/icons/user-plus.svg" width="24" height="24" alt="">
           <span>Создать аккаунт</span>
         </a>
       </nav>
     </div>
   </header>
-  <main class="landing container" id="main">
+  <main class="landing container">
     <h1>Учиться легче вместе</h1>
     <section class="welcome" aria-labelledby="welcome-title">
       <div class="welcome__content">
         <h2 id="welcome-title">Твои знания тоже<br>кому-то нужны.</h2>
         <p>Поделись конспектом и получи баллы для новых материалов.</p>
-        <a class="button button--main" href="pages/auth/login.html#registraciya">Создать аккаунт</a>
+        <a class="button button--main" href="pages/auth/login.html#register">Создать аккаунт</a>
       </div>
       <div class="welcome__nagrada">
         <p class="welcome__points">+100</p>
@@ -45,82 +44,82 @@
       <h2 id="materials-title">Полезное уже ждёт в каталоге</h2>
       <div class="material-grid">
         <article class="material-card material-card--green" aria-labelledby="algebra-title">
-          <div class="material-card__verh">
+          <div class="material-card__top">
             <p class="material-card__meta"><span>Конспект</span> <span>2 курс</span></p>
             <span class="material-card__save" aria-hidden="true">
               <img src="assets/icons/heart-outline.svg" width="24" height="24" alt="">
             </span>
           </div>
           <div class="material-card__content">
-            <h3 id="algebra-title"><a class="material-card__link" href="pages/auth/login.html">Линейная алгебра</a></h3>
+            <h3 id="algebra-title"><a class="material-card__link" href="pages/auth/login.html#register">Линейная алгебра</a></h3>
             <p>Матрицы, векторы и определения</p>
           </div>
-          <div class="material-card__niz">
+          <div class="material-card__bottom">
             <p class="material-card__author">Анна Кузнецова · <span aria-label="Рейтинг 4,9 из 5">★ 4,9</span></p>
             <p class="material-card__price">120 баллов</p>
           </div>
         </article>
         <article class="material-card material-card--blue" aria-labelledby="algorithms-title">
-          <div class="material-card__verh">
+          <div class="material-card__top">
             <p class="material-card__meta"><span>Решённые задачи</span> <span>2 курс</span></p>
             <span class="material-card__save" aria-hidden="true">
               <img src="assets/icons/heart-outline.svg" width="24" height="24" alt="">
             </span>
           </div>
           <div class="material-card__content">
-            <h3 id="algorithms-title"><a class="material-card__link" href="pages/auth/login.html">Алгоритмы и структуры</a></h3>
+            <h3 id="algorithms-title"><a class="material-card__link" href="pages/auth/login.html#register">Алгоритмы и структуры</a></h3>
             <p>35 задач с объяснениями</p>
           </div>
-          <div class="material-card__niz">
+          <div class="material-card__bottom">
             <p class="material-card__author">Михаил Соколов · <span aria-label="Рейтинг 4,8 из 5">★ 4,8</span></p>
             <p class="material-card__price">180 баллов</p>
           </div>
         </article>
-        <article class="material-card material-card--lavandoviy" aria-labelledby="economics-title">
-          <div class="material-card__verh">
+        <article class="material-card material-card--purple" aria-labelledby="economics-title">
+          <div class="material-card__top">
             <p class="material-card__meta"><span>Шпаргалка</span> <span>1 курс</span></p>
             <span class="material-card__save" aria-hidden="true">
               <img src="assets/icons/heart-outline.svg" width="24" height="24" alt="">
             </span>
           </div>
           <div class="material-card__content">
-            <h3 id="economics-title"><a class="material-card__link" href="pages/auth/login.html">Экономика на ладони</a></h3>
+            <h3 id="economics-title"><a class="material-card__link" href="pages/auth/login.html#register">Экономика на ладони</a></h3>
             <p>Главные понятия и определения</p>
           </div>
-          <div class="material-card__niz">
+          <div class="material-card__bottom">
             <p class="material-card__author">Дарья Морозова · <span aria-label="Рейтинг 4,9 из 5">★ 4,9</span></p>
             <p class="material-card__price">60 баллов</p>
           </div>
         </article>
         <article class="material-card material-card--green" aria-labelledby="physics-title">
-          <div class="material-card__verh">
+          <div class="material-card__top">
             <p class="material-card__meta"><span>Конспект</span> <span>1 курс</span></p>
             <span class="material-card__save" aria-hidden="true">
               <img src="assets/icons/heart-outline.svg" width="24" height="24" alt="">
             </span>
           </div>
           <div class="material-card__content">
-            <h3 id="physics-title"><a class="material-card__link" href="pages/auth/login.html">Физика без паники</a></h3>
+            <h3 id="physics-title"><a class="material-card__link" href="pages/auth/login.html#register">Физика без паники</a></h3>
             <p>Формулы и примеры решений</p>
           </div>
-          <div class="material-card__niz">
+          <div class="material-card__bottom">
             <p class="material-card__author">Илья Павлов · <span aria-label="Рейтинг 4,7 из 5">★ 4,7</span></p>
             <p class="material-card__price">90 баллов</p>
           </div>
         </article>
       </div>
     </section>
-    <section class="publikaciya-banner" aria-labelledby="publikaciya-title">
-      <div class="publikaciya-banner__content">
-        <h2 id="publikaciya-title">Есть свой конспект?</h2>
+    <section class="publish-banner" aria-labelledby="publish-title">
+      <div class="publish-banner__content">
+        <h2 id="publish-title">Есть свой конспект?</h2>
         <p>Опубликуй его — другие студенты купят материал за баллы.</p>
       </div>
-      <a class="button button--temniy" href="pages/auth/login.html#registraciya">Опубликовать материал</a>
+      <a class="button button--dark" href="pages/auth/login.html#register">Опубликовать материал</a>
     </section>
     <section class="faq" aria-labelledby="faq-title">
       <h2 id="faq-title">Частые вопросы</h2>
       <div class="faq__items">
-        <details class="faq__item" id="points" open>
+        <details class="faq__item" open>
           <summary>Как получить баллы?</summary>
           <p>100 баллов сразу при регистрации и 25 за каждый опубликованный бесплатный материал. Если назначишь свою цену, получишь её при каждой продаже.</p>
         </details>
@@ -140,7 +139,7 @@
     </section>
   </main>
   <footer class="site-footer">
-    <div class="site-footer__vnutri container">
+    <div class="site-footer__inner container">
       <a class="brand" href="index.html">УниМаркет</a>
       <nav class="site-footer__nav" aria-label="Полезные ссылки">
         <a href="pages/auth/login.html">Каталог</a>
