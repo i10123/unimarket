@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// Регистрация и вход. Возвращают id пользователя; проверку полей делает auth.php.
+// Аккаунт: регистрация, вход, удаление. Поля проверяет вызывающий код.
 final class AuthHandler
 {
     // Хеш для несуществующего логина: проверка занимает столько же времени,
@@ -20,28 +20,26 @@ final class AuthHandler
     {
         $hash = password_hash($password, PASSWORD_ARGON2ID);
 
-        $this->db->beginTransaction();
         try {
-            $this->db
-                ->prepare('INSERT INTO users (login, password_hash, first_name, last_name, email, course)
-                    VALUES (?, ?, ?, ?, ?, ?)')
-                ->execute([$login, $hash, $profile['first_name'], $profile['last_name'], $profile['email'], $profile['course']]);
-            $id = (int) $this->db->lastInsertId();
+            return transaction(function () use ($login, $hash, $profile): int {
+                $this->db
+                    ->prepare('INSERT INTO users (login, password_hash, first_name, last_name, email, course)
+                        VALUES (?, ?, ?, ?, ?, ?)')
+                    ->execute([$login, $hash, $profile['first_name'], $profile['last_name'], $profile['email'], $profile['course']]);
+                $id = (int) $this->db->lastInsertId();
 
-            $this->db
-                ->prepare('INSERT INTO wallets (user_id, available) VALUES (?, ?)')
-                ->execute([$id, self::WELCOME_BONUS]);
-
-            $this->db
-                ->prepare("INSERT INTO point_entries (user_id, kind, available_delta, reserved_delta)
-                    VALUES (?, 'welcome', ?, 0)")
-                ->execute([$id, self::WELCOME_BONUS]);
-
-            $this->db->commit();
-            return $id;
-        } catch (Throwable $error) {
-            $this->db->rollBack();
-            throw $error;
+                $this->db
+                    ->prepare('INSERT INTO wallets (user_id, available) VALUES (?, ?)')
+                    ->execute([$id, self::WELCOME_BONUS]);
+                $this->db
+                    ->prepare("INSERT INTO point_entries (user_id, kind, available_delta, reserved_delta)
+                        VALUES (?, 'welcome', ?, 0)")
+                    ->execute([$id, self::WELCOME_BONUS]);
+                return $id;
+            });
+        } catch (PDOException $error) {
+            // 1062 — нарушение UNIQUE: такой логин уже есть.
+            throw ($error->errorInfo[1] ?? null) === 1062 ? new ApiError('Этот логин уже занят.', 409) : $error;
         }
     }
 
@@ -63,5 +61,25 @@ final class AuthHandler
             return null;
         }
         return (int) $user['id'];
+    }
+
+    // Полное удаление (консоль администратора). Открытые покупки чужих людей у этого продавца
+    // сначала возвращаются покупателям; остальное убирают каскады БД, файлы — с диска.
+    public function delete(int $id): void
+    {
+        $query = $this->db->prepare(
+            'SELECT f.storage_name
+            FROM files f
+            LEFT JOIN materials m ON m.id = f.material_id
+            LEFT JOIN purchases p ON p.id = f.purchase_id
+            LEFT JOIN materials pm ON pm.id = p.material_id
+            WHERE m.author_id = ? OR p.buyer_id = ? OR pm.author_id = ?'
+        );
+        $query->execute([$id, $id, $id]);
+        $storageNames = $query->fetchAll(PDO::FETCH_COLUMN);
+
+        (new Deals($this->db))->refundOpenSales($id);
+        transaction(fn() => $this->db->prepare('DELETE FROM users WHERE id = ?')->execute([$id]));
+        FileStore::delete($storageNames);
     }
 }
