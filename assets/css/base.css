@@ -1,7 +1,7 @@
 /* Шрифты локальные: политика безопасности запрещает внешние. Кириллица и латиница в разных файлах. */
 @font-face {
   font-family: Rubik;
-  src: url("../fonts/rubik-cyrillic-500-normal.woff2") formt("woff2");
+  src: url("../fonts/rubik-cyrillic-500-normal.woff2") format("woff2");
   font-weight: 500;
   font-display: swap;
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
@@ -9,7 +9,7 @@
 
 @font-face {
   font-family: Rubik;
-  src: url("../fonts/rubik-latin-500-normal.woff2") formt("woff2");
+  src: url("../fonts/rubik-latin-500-normal.woff2") format("woff2");
   font-weight: 500;
   font-display: swap;
   unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212;
@@ -17,7 +17,7 @@
 
 @font-face {
   font-family: Onest;
-  src: url("../fonts/onest-cyrillic-400-normal.woff2") formt("woff2");
+  src: url("../fonts/onest-cyrillic-400-normal.woff2") format("woff2");
   font-weight: 400;
   font-display: swap;
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
@@ -25,7 +25,7 @@
 
 @font-face {
   font-family: Onest;
-  src: url("../fonts/onest-latin-400-normal.woff2") formt("woff2");
+  src: url("../fonts/onest-latin-400-normal.woff2") format("woff2");
   font-weight: 400;
   font-display: swap;
   unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212;
@@ -33,7 +33,7 @@
 
 @font-face {
   font-family: Onest;
-  src: url("../fonts/onest-cyrillic-600-normal.woff2") formt("woff2");
+  src: url("../fonts/onest-cyrillic-600-normal.woff2") format("woff2");
   font-weight: 600;
   font-display: swap;
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
@@ -41,15 +41,31 @@
 
 @font-face {
   font-family: Onest;
-  src: url("../fonts/onest-latin-600-normal.woff2") formt("woff2");
+  src: url("../fonts/onest-latin-600-normal.woff2") format("woff2");
   font-weight: 600;
   font-display: swap;
   unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212;
 }
 
 @font-face {
+  font-family: Onest;
+  src: url("../fonts/onest-cyrillic-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+@font-face {
+  font-family: Onest;
+  src: url("../fonts/onest-latin-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212;
+}
+
+@font-face {
   font-family: "Golos Text";
-  src: url("../fonts/golos-text-cyrillic-400-normal.woff2") formt("woff2");
+  src: url("../fonts/golos-text-cyrillic-400-normal.woff2") format("woff2");
   font-weight: 400;
   font-display: swap;
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
@@ -57,28 +73,30 @@
 
 @font-face {
   font-family: "Golos Text";
-  src: url("../fonts/golos-text-latin-400-normal.woff2") formt("woff2");
+  src: url("../fonts/golos-text-latin-400-normal.woff2") format("woff2");
   font-weight: 400;
   font-display: swap;
   unicode-range: U+0000-00FF, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212;
 }
 
 :root {
-  --backgroundt-card: "Golos Text", Arial, sans-serif;
-  --backgroundt-text: Onest, Arial, sans-serif;
-  --backgroundt-heading: Rubik, Arial, sans-serif;
-  --background: #f5f6f1;
+  --font-card: "Golos Text", Arial, sans-serif;
+  --font-text: Onest, Arial, sans-serif;
+  --font-heading: Rubik, Arial, sans-serif;
+  --background: #f6f7f2;
   --surface: #fff;
-  --text: #19221c;
-  --text-muted: #677069;
-  --border: #e0e5db;
-  --accent: #caf24c;
-  --accent-hover: #b6e233;
+  --text: #1d2820;
+  --text-muted: #6a746c;
+  --border: #e7ebe1;
+  --accent: #cdf352;
+  --accent-hover: #bfe63c;
   --dark: #202c23;
-  --green-background: #e4f0bf;
-  --blue-background: #cfe3f5;
-  --purple-background: #e0d6f7;
+  --green-background: #e7f1cf;
+  --blue-background: #d9e8f6;
+  --purple-background: #e6defa;
   --error: #b42318;
+  --shadow: 0 1px 2px rgb(32 44 35 / 4%), 0 8px 24px rgb(32 44 35 / 6%);
+  --shadow-hover: 0 2px 4px rgb(32 44 35 / 6%), 0 16px 32px rgb(32 44 35 / 10%);
 }
 
 *,
@@ -89,13 +107,25 @@
 
 html {
   scrollbar-gutter: stable;
+  /* Якоря и фокус с клавиатуры не прячутся под закреплённую шапку. */
+  scroll-padding-top: 96px;
+}
+
+::selection {
+  background: var(--accent);
+}
+
+/* Атрибут hidden должен скрывать и элементы с собственным display (flex, inline-flex). */
+[hidden] {
+  display: none !important;
 }
 
 body {
   margin: 0;
   background: var(--background);
   color: var(--text);
-  font: 400 15px/1.4 var(--backgroundt-text);
+  font: 400 15px/1.5 var(--font-text);
+  -webkit-font-smoothing: antialiased;
 }
 
 h1,
@@ -105,12 +135,18 @@ p {
   margin: 0;
 }
 
+/* Крупные заголовки и логотип — Rubik, подзаголовки — Onest: спокойнее и читаемее. */
 h1,
-h2,
-h3,
 .brand {
-  font-family: var(--backgroundt-heading);
+  font-family: var(--font-heading);
   font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+h2,
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 h1 {
@@ -124,6 +160,7 @@ h2 {
 a {
   color: inherit;
   text-decoration: none;
+  text-underline-offset: 3px;
 }
 
 img {
@@ -141,12 +178,18 @@ img {
   margin-inline: auto;
 }
 
+/* Шапка закреплена и слегка просвечивает. */
 .site-header {
-  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: rgb(255 255 255 / 90%);
+  box-shadow: 0 1px 0 var(--border);
+  backdrop-filter: blur(12px);
 }
 
 /* Общая строка шапки: логотип слева, действия справа. */
-.site-header__inner {
+.site-header__vnutri {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -169,13 +212,18 @@ img {
   min-height: 48px;
   padding: 12px 16px;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 14px;
   font-family: inherit;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   text-align: center;
   cursor: pointer;
-  transition: background-color 150ms, border-color 150ms, transform 100ms;
+  transition: background-color 150ms, border-color 150ms, box-shadow 200ms, transform 150ms;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .button:active:not(:disabled) {
@@ -184,6 +232,7 @@ img {
 
 .button--main {
   background: var(--accent);
+  box-shadow: 0 4px 14px rgb(160 200 30 / 28%);
   color: var(--text);
 }
 
@@ -199,6 +248,10 @@ img {
 }
 
 @media (hover: hover) {
+  .button:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
   .button--main:hover {
     background: var(--accent-hover);
   }
@@ -212,19 +265,38 @@ img {
   }
 }
 
-.skip-link {
-  position: fixed;
-  top: 8px;
-  left: 16px;
-  z-index: 10;
-  padding: 12px 16px;
-  border-radius: 8px;
-  background: var(--accent);
-  transform: translateY(-160%);
+.site-footer {
+  background: linear-gradient(180deg, #243228, #1b251e);
+  color: var(--surface);
 }
 
-.skip-link:focus {
-  transform: translateY(0);
+.site-footer__vnutri {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 24px;
+  padding-block: 32px;
+}
+
+.site-footer .brand {
+  font-size: 18px;
+}
+
+.site-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 36px;
+  font-size: 12px;
+}
+
+.site-footer :focus-visible {
+  outline-color: var(--surface);
+}
+
+@media (hover: hover) {
+  .site-footer__nav a:hover {
+    text-decoration: underline;
+  }
 }
 
 @media (max-width: 767.98px) {
@@ -233,17 +305,50 @@ img {
   }
 
   .site-header .brand img {
-    width: 48px;
-    height: 48px;
+    width: 32px;
+    height: 32px;
   }
 
   .container {
     width: calc(100% - 32px);
   }
+
+  .site-footer__vnutri {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-block: 24px;
+    text-align: center;
+  }
+
+  .site-footer__nav {
+    justify-content: center;
+  }
+}
+
+/* Плавное появление страницы. */
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.landing,
+.page,
+.auth__screen {
+  animation: appear 300ms ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .button {
     transition: none;
+  }
+
+  .landing,
+  .page,
+  .auth__screen,
+  .auth__form {
+    animation: none;
   }
 }

@@ -1,0 +1,376 @@
+/* Страницы после входа: шапка, раскладка, панели, списки, окна. */
+
+/* Шапка: значки с подписями, баланс и кнопка публикации. */
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.app-nav a:not(.button) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+}
+
+.app-nav .button {
+  gap: 4px;
+}
+
+.app-nav__balance {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 20px;
+  border-left: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.app-nav__balance strong {
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 60vh;
+  padding-block: 32px 48px;
+}
+
+.page h1 {
+  font-size: 32px;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: 24px;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow-wrap: anywhere;
+}
+
+.panel h2 {
+  font-size: 18px;
+}
+
+.panel--dark {
+  background: linear-gradient(135deg, #202c23, #2c3e31);
+  color: var(--surface);
+}
+
+.panel--dark .row__meta {
+  color: rgb(255 255 255 / 70%);
+}
+
+/* Узкая колонка для формы публикации. */
+.page--forma {
+  width: min(640px, calc(100% - 32px));
+}
+
+.back {
+  align-self: flex-start;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.empty {
+  color: var(--text-muted);
+}
+
+/* Кабинет: меню слева, содержимое справа. */
+.cabinet {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.cabinet__content,
+.dialog__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar a,
+.sidebar button {
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  font: 500 14px var(--font-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar [aria-current="page"] {
+  background: var(--green-background);
+}
+
+.sidebar button {
+  color: var(--error);
+}
+
+@media (hover: hover) {
+  .sidebar a:hover,
+  .sidebar button:hover {
+    background: var(--green-background);
+  }
+}
+
+/* Строки списков: покупки, продажи, история баллов. */
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding: 18px 22px;
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow-wrap: anywhere;
+}
+
+.row--vnimanie {
+  background: var(--green-background);
+}
+
+.row__text {
+  display: flex;
+  flex: 1 1 280px;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.row__title {
+  font-weight: 600;
+}
+
+.row__meta {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.row__actions .button {
+  min-height: 40px;
+  padding: 8px 14px;
+}
+
+.row__sum {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.row__sum--plus {
+  color: #2f7d32;
+}
+
+.file-link {
+  color: var(--text);
+  font-size: 13px;
+  text-decoration: underline;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--border);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge--ozhidanie {
+  background: var(--blue-background);
+}
+
+.badge--problema {
+  background: #f8d7d3;
+}
+
+.badge--gotovo {
+  background: var(--green-background);
+}
+
+.counters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.counters strong {
+  font: 500 24px var(--font-heading);
+}
+
+.profile-head {
+  flex-direction: row;
+  align-items: center;
+}
+
+.avatar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--green-background);
+  font: 500 20px var(--font-heading);
+}
+
+/* Крупное число: баланс и цена материала. */
+.big-number {
+  font: 500 32px var(--font-heading);
+}
+
+/* Страница материала: описание слева, блок покупки справа. */
+.material {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  align-items: start;
+  gap: 24px;
+}
+
+.material__info {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px;
+  border-radius: 22px;
+  overflow-wrap: anywhere;
+}
+
+.material__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.material__text {
+  white-space: pre-line;
+}
+
+.material__files {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgb(255 255 255 / 60%);
+}
+
+.material__files h2 {
+  font-size: 16px;
+}
+
+/* Окна: подтверждение, обращение, замена, оценка. */
+.dialog {
+  width: min(460px, calc(100% - 32px));
+  padding: 28px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: 0 24px 64px rgb(25 34 28 / 25%);
+  color: var(--text);
+}
+
+.dialog::backdrop {
+  background: rgb(25 34 28 / 55%);
+}
+
+.dialog__buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 1199.98px) {
+  .material {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767.98px) {
+  .page h1 {
+    font-size: 28px;
+  }
+
+  .cabinet {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebar {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  /* В шапке остаются значки, баланс и «+»: подписи и название скрыты. */
+  .brand span,
+  .app-nav a span,
+  .app-nav__balance span {
+    display: none;
+  }
+
+  .app-nav {
+    gap: 8px;
+  }
+
+  .app-nav a:not(.button) {
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+  }
+
+  .app-nav__balance {
+    padding-left: 8px;
+  }
+
+  .app-nav .button {
+    min-width: 44px;
+    padding: 0;
+  }
+}
