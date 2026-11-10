@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// Консоль администратора: пользователи, баланс, сброс пароля, удаление.
+// Консоль администратора: список пользователей, подробная статистика каждого и удаление.
 // Запуск (панель и модуль MySQL-8.4 включены): php scripts/admin.php
 if (PHP_SAPI !== 'cli') {
     exit;
@@ -13,7 +13,7 @@ const KINDS = [
     'welcome' => 'Бонус при регистрации',
     'reward' => 'Награда за материал',
     'reserve' => 'Резерв при покупке',
-    'release' => 'Выплата продавцу',
+    'release' => 'Выплата / списание резерва',
     'refund' => 'Возврат',
 ];
 
@@ -49,20 +49,35 @@ function printTable(array $headers, array $rows): void
     }
 }
 
+// Пользователи со статистикой. $where — условие с одним параметром (или пусто для всех).
+function users(string $where = '', ?string $value = null): array
+{
+    $query = db()->prepare(
+        "SELECT u.id, u.login, u.first_name, u.last_name, u.email, u.course, u.created_at, w.available, w.reserved,
+            (SELECT COUNT(*) FROM materials WHERE author_id = u.id) AS materials,
+            (SELECT COUNT(*) FROM purchases p JOIN materials m ON m.id = p.material_id
+                WHERE m.author_id = u.id AND p.status = 'completed') AS sales,
+            (SELECT COALESCE(SUM(p.price), 0) FROM purchases p JOIN materials m ON m.id = p.material_id
+                WHERE m.author_id = u.id AND p.status = 'completed') AS earned,
+            (SELECT COUNT(*) FROM purchases WHERE buyer_id = u.id) AS purchases,
+            (SELECT COALESCE(SUM(price), 0) FROM purchases WHERE buyer_id = u.id AND status <> 'refunded') AS spent,
+            (SELECT COUNT(*) FROM favorites WHERE user_id = u.id) AS favorites,
+            r.average AS rating, COALESCE(r.votes, 0) AS votes
+        FROM users u
+        LEFT JOIN wallets w ON w.user_id = u.id
+        LEFT JOIN " . Market::RATINGS . " ON r.author_id = u.id
+        $where
+        ORDER BY u.id"
+    );
+    $query->execute($value === null ? [] : [$value]);
+    return $query->fetchAll();
+}
+
 // Спрашивает номер или логин. Строка только из цифр считается номером.
 function askUser(): ?array
 {
     $value = ask('Номер (id) или логин: ');
-    $field = ctype_digit($value) ? 'u.id' : 'u.login';
-    $query = db()->prepare(
-        "SELECT u.id, u.login, u.first_name, u.last_name, u.email, u.course, u.created_at, w.available, w.reserved
-        FROM users u
-        LEFT JOIN wallets w ON w.user_id = u.id
-        WHERE $field = ?"
-    );
-    $query->execute([$value]);
-
-    $user = $query->fetch() ?: null;
+    $user = users(ctype_digit($value) ? 'WHERE u.id = ?' : 'WHERE u.login = ?', $value)[0] ?? null;
     if ($user === null) {
         echo 'Пользователь не найден.', PHP_EOL;
     }
@@ -71,115 +86,60 @@ function askUser(): ?array
 
 function listUsers(): void
 {
-    $rows = db()->query(
-        "SELECT u.id, u.login, NULLIF(CONCAT_WS(' ', u.first_name, u.last_name), ''), u.course,
-            w.available, w.reserved, u.created_at
-        FROM users u
-        LEFT JOIN wallets w ON w.user_id = u.id
-        ORDER BY u.id"
-    )->fetchAll();
-
-    printTable(['ID', 'Логин', 'Имя', 'Курс', 'Баллы', 'Резерв', 'Создан'], $rows);
+    $rows = array_map(
+        fn(array $u): array => [
+            $u['id'], $u['login'], trim("{$u['first_name']} {$u['last_name']}") ?: null, $u['available'], $u['reserved'],
+            $u['materials'], $u['sales'], $u['purchases'], $u['created_at'],
+        ],
+        users()
+    );
+    printTable(['ID', 'Логин', 'Имя', 'Баллы', 'Резерв', 'Материалов', 'Продаж', 'Покупок', 'Создан'], $rows);
     echo 'Всего: ', count($rows), PHP_EOL;
-}
-
-function countRows(string $sql, int $userId): int
-{
-    $query = db()->prepare($sql);
-    $query->execute([$userId]);
-    return (int) $query->fetchColumn();
 }
 
 function showUser(): void
 {
-    $user = askUser();
-    if ($user === null) {
+    $u = askUser();
+    if ($u === null) {
         return;
     }
 
     printTable(['Поле', 'Значение'], [
-        ['ID', $user['id']],
-        ['Логин', $user['login']],
-        ['Имя', $user['first_name']],
-        ['Фамилия', $user['last_name']],
-        ['Email', $user['email']],
-        ['Курс', $user['course']],
-        ['Баллы', $user['available']],
-        ['Резерв', $user['reserved']],
-        ['Создан', $user['created_at']],
-        ['Материалов', countRows('SELECT COUNT(*) FROM materials WHERE author_id = ?', $user['id'])],
-        ['Покупок', countRows('SELECT COUNT(*) FROM purchases WHERE buyer_id = ?', $user['id'])],
+        ['ID', $u['id']], ['Логин', $u['login']], ['Имя', $u['first_name']], ['Фамилия', $u['last_name']],
+        ['Email', $u['email']], ['Курс', $u['course']], ['Создан', $u['created_at']],
+        ['Баллы доступно', $u['available']], ['Баллы в резерве', $u['reserved']],
+        ['Опубликовано материалов', $u['materials']],
+        ['Продаж завершено', $u['sales']], ['Заработано с продаж', $u['earned']],
+        ['Покупок', $u['purchases']], ['Потрачено на покупки', $u['spent']],
+        ['В избранном', $u['favorites']],
+        ['Рейтинг продавца', $u['votes'] > 0 ? "{$u['rating']} (оценок: {$u['votes']})" : 'нет оценок'],
     ]);
 
-    $query = db()->prepare(
-        'SELECT kind, available_delta, reserved_delta, created_at
-        FROM point_entries
-        WHERE user_id = ?
-        ORDER BY id DESC'
-    );
-    $query->execute([$user['id']]);
-    $entries = array_map(
-        fn(array $entry): array => ['kind' => KINDS[$entry['kind']]] + $entry,
-        $query->fetchAll()
-    );
+    $query = db()->prepare('SELECT kind, available_delta, reserved_delta, created_at FROM point_entries WHERE user_id = ? ORDER BY id DESC');
+    $query->execute([$u['id']]);
+    $entries = array_map(fn(array $entry): array => ['kind' => KINDS[$entry['kind']]] + $entry, $query->fetchAll());
 
     echo PHP_EOL, 'История баллов:', PHP_EOL;
     printTable(['Событие', 'Баллы', 'Резерв', 'Когда'], $entries);
 }
 
-// Пароль создаётся случайный и показывается один раз: хеш обратно не прочитать.
-function resetPassword(): void
-{
-    $user = askUser();
-    if ($user === null) {
-        return;
-    }
-
-    $password = bin2hex(random_bytes(6));
-    db()
-        ->prepare('UPDATE users SET password_hash = ? WHERE id = ?')
-        ->execute([password_hash($password, PASSWORD_ARGON2ID), $user['id']]);
-
-    echo 'Логин: ', $user['login'], PHP_EOL;
-    echo 'Новый пароль: ', $password, PHP_EOL;
-}
-
-// Порядок важен: сначала строки, которые ссылаются на пользователя, потом он сам.
+// Удаляет пользователя с материалами, покупками, файлами и историей (каскадом).
+// Открытые покупки его материалов сначала возвращаются покупателям.
 function deleteUser(): void
 {
-    $user = askUser();
-    if ($user === null) {
+    $u = askUser();
+    if ($u === null) {
         return;
     }
 
-    if (ask("Удаление навсегда. Для подтверждения введи логин {$user['login']}: ") !== $user['login']) {
+    echo "Будут удалены: аккаунт, материалов — {$u['materials']}, покупок — {$u['purchases']}, история баллов и файлы.", PHP_EOL;
+    echo 'У других участников пропадут записи о сделках с ним, поэтому их история баллов перестанет сходиться с балансом.', PHP_EOL;
+    if (ask("Удаление навсегда. Для подтверждения введи логин {$u['login']}: ") !== $u['login']) {
         echo 'Отменено.', PHP_EOL;
         return;
     }
-
-    db()->beginTransaction();
-    try {
-        foreach (['point_entries', 'favorites', 'wallets'] as $table) {
-            db()->prepare("DELETE FROM $table WHERE user_id = ?")->execute([$user['id']]);
-        }
-        db()->prepare('DELETE FROM users WHERE id = ?')->execute([$user['id']]);
-        db()->commit();
-        echo 'Пользователь удалён.', PHP_EOL;
-    } catch (PDOException $error) {
-        db()->rollBack();
-        // 1451 — на строку есть ссылки: у пользователя есть материалы или покупки.
-        if (($error->errorInfo[1] ?? null) !== 1451) {
-            throw $error;
-        }
-        echo 'Нельзя удалить: у пользователя есть материалы или покупки.', PHP_EOL;
-    }
-}
-
-function clearLimits(): void
-{
-    $files = glob(storageDir('limits') . '/*.json') ?: [];
-    array_map('unlink', $files);
-    echo 'Сброшено счётчиков: ', count($files), PHP_EOL;
+    (new AuthHandler(db()))->delete((int) $u['id']);
+    echo 'Пользователь удалён.', PHP_EOL;
 }
 
 if (function_exists('sapi_windows_cp_set')) {
@@ -193,18 +153,14 @@ try {
     while (true) {
         echo PHP_EOL, 'УниМаркет — консоль администратора', PHP_EOL;
         echo '1. Список пользователей', PHP_EOL;
-        echo '2. Пользователь подробно и история баллов', PHP_EOL;
-        echo '3. Сбросить пароль', PHP_EOL;
-        echo '4. Удалить пользователя', PHP_EOL;
-        echo '5. Снять блокировку попыток входа', PHP_EOL;
+        echo '2. Пользователь: статистика и история баллов', PHP_EOL;
+        echo '3. Удалить пользователя', PHP_EOL;
         echo '0. Выход', PHP_EOL;
 
         match (ask('> ')) {
             '1' => listUsers(),
             '2' => showUser(),
-            '3' => resetPassword(),
-            '4' => deleteUser(),
-            '5' => clearLimits(),
+            '3' => deleteUser(),
             '0' => exit,
             default => print('Нет такого пункта.' . PHP_EOL),
         };
