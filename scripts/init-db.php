@@ -23,6 +23,23 @@ foreach (preg_split('/;\s*$/m', file_get_contents($root . '/database/schema.sql'
     }
 }
 
+// Схема уже могла быть создана старой версией: ключи без ON DELETE CASCADE пересоздаём.
+// Данные при этом не затрагиваются, повторный запуск ничего не меняет.
+$keys = $pdo->query(
+    "SELECT k.TABLE_NAME AS t, k.CONSTRAINT_NAME AS n, k.COLUMN_NAME AS c, k.REFERENCED_TABLE_NAME AS rt, k.REFERENCED_COLUMN_NAME AS rc
+    FROM information_schema.KEY_COLUMN_USAGE k
+    JOIN information_schema.REFERENTIAL_CONSTRAINTS r
+        ON r.CONSTRAINT_SCHEMA = k.CONSTRAINT_SCHEMA AND r.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+    WHERE k.TABLE_SCHEMA = 'unimarket' AND k.REFERENCED_TABLE_NAME IS NOT NULL AND r.DELETE_RULE <> 'CASCADE'"
+)->fetchAll(PDO::FETCH_ASSOC);
+foreach ($keys as $key) {
+    $pdo->exec("ALTER TABLE {$key['t']} DROP FOREIGN KEY {$key['n']}");
+    $pdo->exec("ALTER TABLE {$key['t']} ADD FOREIGN KEY ({$key['c']}) REFERENCES {$key['rt']}({$key['rc']}) ON DELETE CASCADE");
+}
+if ($keys) {
+    echo 'Обновлено связей (ON DELETE CASCADE): ', count($keys), "\n";
+}
+
 $path = $root . '/config/local.php';
 $config = is_file($path) ? require $path : ['user' => 'unimarket', 'password' => bin2hex(random_bytes(24))];
 $config['dsn'] = "mysql:host=$host;port=3306;dbname=unimarket;charset=utf8mb4";

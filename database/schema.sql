@@ -1,3 +1,5 @@
+-- Все связи с ON DELETE CASCADE: удаление пользователя в консоли администратора
+-- убирает его кошелёк, материалы, покупки и историю баллов.
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     -- Логин: 3–32 символа, латиница в нижнем регистре, цифры, _ . - (проверяет PHP).
@@ -15,7 +17,7 @@ CREATE TABLE IF NOT EXISTS wallets (
     user_id BIGINT UNSIGNED PRIMARY KEY,
     available BIGINT NOT NULL DEFAULT 0 CHECK (available >= 0),
     reserved BIGINT NOT NULL DEFAULT 0 CHECK (reserved >= 0),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS materials (
@@ -30,7 +32,7 @@ CREATE TABLE IF NOT EXISTS materials (
     price BIGINT NOT NULL CHECK (price >= 0),
     status ENUM('draft', 'published', 'archived') NOT NULL DEFAULT 'draft',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (author_id) REFERENCES users(id),
+    FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX catalog (status, created_at),
     INDEX filters (status, type, subject, course, price)
 ) ENGINE=InnoDB;
@@ -42,6 +44,7 @@ CREATE TABLE IF NOT EXISTS purchases (
     price BIGINT NOT NULL CHECK (price >= 0),
     status ENUM('pending', 'problem', 'completed', 'refunded') NOT NULL DEFAULT 'pending',
     purchased_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    -- pending: до автоподтверждения; problem: срок продавца на замену или возврат.
     deadline_at DATETIME NOT NULL,
     problem TEXT NULL,
     problem_at DATETIME NULL,
@@ -49,8 +52,8 @@ CREATE TABLE IF NOT EXISTS purchases (
     completed_at DATETIME NULL,
     rating TINYINT UNSIGNED NULL CHECK (rating BETWEEN 1 AND 5),
     CHECK (rating IS NULL OR status = 'completed'),
-    FOREIGN KEY (buyer_id) REFERENCES users(id),
-    FOREIGN KEY (material_id) REFERENCES materials(id),
+    FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE,
     UNIQUE KEY one_purchase (buyer_id, material_id),
     INDEX deadlines (status, deadline_at),
     INDEX sales (material_id, status, purchased_at)
@@ -67,16 +70,16 @@ CREATE TABLE IF NOT EXISTS files (
     size_bytes BIGINT UNSIGNED NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CHECK ((material_id IS NOT NULL) + (purchase_id IS NOT NULL) = 1),
-    FOREIGN KEY (material_id) REFERENCES materials(id),
-    FOREIGN KEY (purchase_id) REFERENCES purchases(id)
+    FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE,
+    FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS favorites (
     user_id BIGINT UNSIGNED NOT NULL,
     material_id BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (user_id, material_id),
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (material_id) REFERENCES materials(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- Баланс и запись его изменения сохраняются в одной транзакции.
@@ -94,9 +97,9 @@ CREATE TABLE IF NOT EXISTS point_entries (
     CHECK ((kind = 'welcome' AND material_id IS NULL AND purchase_id IS NULL)
         OR (kind = 'reward' AND material_id IS NOT NULL AND purchase_id IS NULL)
         OR (kind IN ('reserve', 'release', 'refund') AND purchase_id IS NOT NULL AND material_id IS NULL)),
-    FOREIGN KEY (user_id) REFERENCES wallets(user_id),
-    FOREIGN KEY (purchase_id) REFERENCES purchases(id),
-    FOREIGN KEY (material_id) REFERENCES materials(id),
+    FOREIGN KEY (user_id) REFERENCES wallets(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
+    FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE,
     UNIQUE KEY one_purchase_entry (user_id, purchase_id, kind),
     UNIQUE KEY one_material_reward (material_id, kind),
     INDEX history (user_id, created_at)
