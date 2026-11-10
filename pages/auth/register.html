@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/assets/icons/logo.svg">
+  <meta name="description" content="Регистрация в УниМаркет: 100 баллов в подарок.">
+  <title>Регистрация — УниМаркет</title>
+  <link rel="stylesheet" href="../../assets/css/base.css">
+  <link rel="stylesheet" href="../../assets/css/forms.css">
+  <link rel="stylesheet" href="../../assets/css/auth.css">
+  <script type="module" src="../../assets/js/register.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__vnutri container">
+      <a class="brand" href="../../index.html" aria-label="УниМаркет — главная">
+        <img src="../../assets/icons/logo.svg" width="40" height="40" alt="">
+        <span>УниМаркет</span>
+      </a>
+    </div>
+  </header>
+  <main class="auth container">
+    <section class="auth__screen" aria-labelledby="title">
+      <h1 id="title">Добро пожаловать в УниМаркет</h1>
+      <!-- Шаг 1: данные для входа. Аккаунт создаётся только в конце шага 2. -->
+      <form class="auth__form" method="post" aria-label="Данные для входа">
+        <div class="auth__progress" aria-hidden="true"><span class="auth__progress-part--active"></span><span></span></div>
+        <div class="auth__header">
+          <h2 class="auth__heading">Данные для входа</h2>
+          <p class="auth__step">Шаг 1 из 2</p>
+        </div>
+        <div class="field">
+          <label for="login">Логин</label>
+          <input id="login" name="login" autocomplete="username" minlength="3" maxlength="32" pattern="[A-Za-z0-9_.\-]{3,32}" title="Логин: от 3 до 32 символов, латинские буквы, цифры, точка, дефис и подчёркивание." aria-describedby="login-hint" required>
+          <small id="login-hint">От 3 до 32 символов: латинские буквы, цифры, точка, дефис и подчёркивание</small>
+        </div>
+        <div class="field">
+          <label for="password">Пароль</label>
+          <div class="field__password">
+            <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="repeat">Повтори пароль</label>
+          <div class="field__password">
+            <input id="repeat" name="repeat" type="password" autocomplete="new-password" required>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field__consent">
+            <input id="rules" name="rules" type="checkbox" title="Чтобы продолжить, прими правила." required>
+            <label for="rules">Принимаю <a href="../../index.html#faq-title">правила обмена материалами</a></label>
+          </div>
+        </div>
+        <button class="button button--main" type="submit">Продолжить</button>
+        <p class="form__status" role="alert" hidden></p>
+        <p>Уже есть аккаунт? <a href="login.html">Войти</a></p>
+      </form>
+      <!-- Шаг 2: профиль, все поля необязательны. -->
+      <form class="auth__form" method="post" aria-label="О себе" hidden>
+        <div class="auth__progress" aria-hidden="true"><span class="auth__progress-part--active"></span><span class="auth__progress-part--active"></span></div>
+        <button class="auth__back" type="button">← Назад к шагу 1</button>
+        <div class="auth__header">
+          <h2 class="auth__heading">Расскажи о себе</h2>
+          <p class="auth__step">Шаг 2 из 2</p>
+        </div>
+        <div class="field">
+          <label for="first_name">Имя</label>
+          <input id="first_name" name="first_name" autocomplete="given-name" maxlength="60" pattern="\p{L}[\p{L} '\-]*" title="Только буквы, пробел, дефис и апостроф.">
+        </div>
+        <div class="field">
+          <label for="last_name">Фамилия</label>
+          <input id="last_name" name="last_name" autocomplete="family-name" maxlength="60" pattern="\p{L}[\p{L} '\-]*" title="Только буквы, пробел, дефис и апостроф.">
+        </div>
+        <div class="field">
+          <label for="course">Курс</label>
+          <select id="course" name="course">
+            <option value="">Выбери курс</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="255">
+        </div>
+        <button class="button button--secondary" id="skip" type="button">Пропустить</button>
+        <button class="button button--main" type="submit">Создать аккаунт</button>
+        <p class="form__status" role="alert" hidden></p>
+      </form>
+    </section>
+    <nav class="auth__nav" aria-label="Полезные ссылки">
+      <a href="../../index.html#faq-title">Помощь и правила</a>
+      <a href="../../index.html">На главную</a>
+    </nav>
+    <noscript><p class="auth__nav">Для регистрации включи JavaScript.</p></noscript>
+  </main>
+</body>
+</html>

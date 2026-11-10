@@ -1,3 +1,4 @@
+/* Страницы входа, регистрации и восстановления. Поля — в forms.css. */
 .auth {
   display: flex;
   flex-direction: column;
@@ -7,23 +8,27 @@
 }
 
 .auth__screen {
-  display: none;
+  display: flex;
   flex-direction: column;
   width: min(460px, 100%);
   gap: 24px;
-  scroll-margin-top: 120px;
-}
-
-.auth__screen--open,
-html:not([data-screen]) .auth__screen--login,
-[data-screen="login"] #login,
-[data-screen="register"] #register {
-  display: flex;
 }
 
 .auth h1 {
   font-size: 28px;
   text-align: center;
+}
+
+.auth__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  animation: appear 200ms ease-out;
 }
 
 .auth__heading {
@@ -38,22 +43,9 @@ html:not([data-screen]) .auth__screen--login,
   gap: 16px;
 }
 
-.auth__step,
-.field small {
+.auth__step {
   color: var(--text-muted);
   font-size: 12px;
-  font-weight: 400;
-}
-
-.auth__text {
-  color: var(--text-muted);
-  font-weight: 400;
-}
-
-/* Показываем только текущий шаг регистрации. */
-[data-step="1"] #profile-step,
-[data-step="2"] #credentials-step {
-  display: none;
 }
 
 .auth__progress {
@@ -74,37 +66,15 @@ html:not([data-screen]) .auth__screen--login,
 
 .auth__back {
   align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--text-muted);
-  font-weight: 400;
-}
-
-.auth__form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px;
-  border-radius: 16px;
-  background: var(--surface);
-  box-shadow: 0 12px 32px rgb(32 44 35 / 6%);
-  font-size: 14px;
-  font-weight: 600;
-  animation: appear 200ms ease-out;
-}
-
-@keyframes appear {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
+  font: inherit;
+  cursor: pointer;
 }
 
 .auth__form a,
-.auth__nav a {
-  text-underline-offset: 3px;
-}
-
-.auth__form a:hover,
-.auth__form a:focus-visible,
 .auth__nav a {
   text-decoration: underline;
 }
@@ -117,151 +87,13 @@ html:not([data-screen]) .auth__screen--login,
   gap: 8px 16px;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  gap: 8px;
-}
-
-.field input,
-.field select {
-  width: 100%;
-  min-width: 0;
-  height: 44px;
-  padding: 8px 16px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background-color: var(--surface);
-  color: var(--text);
-  font: 400 15px/1.4 var(--backgroundt-text);
-}
-
-.field select {
-  padding-right: 44px;
-  background: var(--surface) url("../icons/chevron-down.svg") no-repeat right 16px center;
-  appearance: none;
-  cursor: pointer;
-}
-
-.field input:focus,
-.field select:focus {
-  border-color: var(--text);
-  outline: none;
-}
-
-.field__required {
-  color: var(--error);
-}
-
-.field__error {
-  color: var(--error);
-  font-size: 12px;
-  font-weight: 400;
-}
-
-.field input[aria-invalid="true"],
-.field select[aria-invalid="true"] {
-  border-color: var(--error);
-}
-
-.field__consent {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 400;
-}
-
-.field__consent input {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  padding: 0;
-  accent-color: var(--dark);
-  cursor: pointer;
-}
-
-.field__consent input[aria-invalid="true"] {
-  outline: 2px solid var(--error);
-  outline-offset: 1px;
-}
-
-.field__consent a {
-  text-decoration: underline;
-}
-
-.field input::placeholder {
-  color: var(--text-muted);
-  opacity: 1;
-}
-
-.field__password {
-  position: relative;
-}
-
-.field__password input {
-  padding-right: 56px;
-}
-
-.field__toggle {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  cursor: pointer;
-}
-
-.field__toggle:focus-visible {
-  outline: none;
-}
-
-.field__toggle[aria-pressed="true"]::after {
-  content: "";
-  position: absolute;
-  width: 20px;
-  height: 1.5px;
-  background: var(--text-muted);
-  transform: rotate(45deg);
-}
-
 .auth__nav {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
+  gap: 16px;
   color: var(--text-muted);
   font-size: 12px;
-  font-weight: 500;
-}
-
-.auth__note {
-  max-width: 520px;
-  color: var(--text-muted);
-  font-size: 12px;
-  text-align: center;
-}
-
-.auth__status {
-  color: var(--error);
-  font-weight: 400;
-}
-
-.auth .button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .auth__form {
-    animation: none;
-  }
 }
 
 @media (max-width: 767.98px) {
@@ -275,10 +107,5 @@ html:not([data-screen]) .auth__screen--login,
 
   .auth__form {
     padding: 20px 16px;
-  }
-
-  .field input,
-  .field select {
-    font-size: 16px;
   }
 }
