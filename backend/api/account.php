@@ -19,7 +19,7 @@ runApi(function (): void {
     switch ($input['action'] ?? '') {
         case 'update_profile':
             $profile = readProfile($input);
-            $db->prepare('UPDATE users SET first_name = ?, last_name = ?, email = ?, course = ? WHERE id = ?')
+            $db->prepare('UPDATE users SET first_name = ?, last_name = ?, email = ?, course = ?, contact = ? WHERE id = ?')
                 ->execute([...array_values($profile), $user['id']]);
             break;
         case 'change_password':
@@ -44,9 +44,8 @@ runApi(function (): void {
 function accountData(PDO $db, array $user): array
 {
     $query = $db->prepare(
-        "SELECT u.login, u.first_name, u.last_name, u.email, u.course, u.created_at,
+        "SELECT u.login, u.first_name, u.last_name, u.email, u.course, u.contact, u.created_at,
             (SELECT COUNT(*) FROM purchases WHERE buyer_id = u.id) AS purchases,
-            (SELECT COUNT(*) FROM purchases WHERE buyer_id = u.id AND status IN ('pending', 'problem')) AS waiting,
             (SELECT COUNT(*) FROM materials WHERE author_id = u.id) AS materials,
             r.average AS rating, COALESCE(r.votes, 0) AS votes
         FROM users u
@@ -57,7 +56,7 @@ function accountData(PDO $db, array $user): array
 
     // Название берём у материала: напрямую (награда) или через покупку.
     $history = $db->prepare(
-        'SELECT e.kind, e.available_delta, e.reserved_delta, e.created_at, m.id AS material_id, m.title
+        'SELECT e.kind, e.delta, e.created_at, m.id AS material_id, m.title
         FROM point_entries e
         LEFT JOIN purchases p ON p.id = e.purchase_id
         LEFT JOIN materials m ON m.id = COALESCE(e.material_id, p.material_id)

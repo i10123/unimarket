@@ -15,7 +15,7 @@ final class AuthHandler
     }
 
     // Аккаунт, кошелёк с бонусом и запись о бонусе создаются вместе или не создаются вовсе.
-    // $profile: first_name, last_name, email, course; любое из них может быть null.
+    // $profile: first_name, last_name, email, course (любое может быть null) и contact (обязателен).
     public function register(string $login, string $password, array $profile): int
     {
         $hash = password_hash($password, PASSWORD_ARGON2ID);
@@ -23,17 +23,16 @@ final class AuthHandler
         try {
             return transaction(function () use ($login, $hash, $profile): int {
                 $this->db
-                    ->prepare('INSERT INTO users (login, password_hash, first_name, last_name, email, course)
-                        VALUES (?, ?, ?, ?, ?, ?)')
-                    ->execute([$login, $hash, $profile['first_name'], $profile['last_name'], $profile['email'], $profile['course']]);
+                    ->prepare('INSERT INTO users (login, password_hash, first_name, last_name, email, course, contact)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)')
+                    ->execute([$login, $hash, ...array_values($profile)]);
                 $id = (int) $this->db->lastInsertId();
 
                 $this->db
                     ->prepare('INSERT INTO wallets (user_id, available) VALUES (?, ?)')
                     ->execute([$id, self::WELCOME_BONUS]);
                 $this->db
-                    ->prepare("INSERT INTO point_entries (user_id, kind, available_delta, reserved_delta)
-                        VALUES (?, 'welcome', ?, 0)")
+                    ->prepare("INSERT INTO point_entries (user_id, kind, delta) VALUES (?, 'welcome', ?)")
                     ->execute([$id, self::WELCOME_BONUS]);
                 return $id;
             });
@@ -63,22 +62,15 @@ final class AuthHandler
         return (int) $user['id'];
     }
 
-    // Полное удаление (консоль администратора). Открытые покупки чужих людей у этого продавца
-    // сначала возвращаются покупателям; остальное убирают каскады БД, файлы — с диска.
+    // Полное удаление (консоль администратора): данные убирают каскады БД, файлы материалов — с диска.
     public function delete(int $id): void
     {
         $query = $this->db->prepare(
-            'SELECT f.storage_name
-            FROM files f
-            LEFT JOIN materials m ON m.id = f.material_id
-            LEFT JOIN purchases p ON p.id = f.purchase_id
-            LEFT JOIN materials pm ON pm.id = p.material_id
-            WHERE m.author_id = ? OR p.buyer_id = ? OR pm.author_id = ?'
+            'SELECT f.storage_name FROM files f JOIN materials m ON m.id = f.material_id WHERE m.author_id = ?'
         );
-        $query->execute([$id, $id, $id]);
+        $query->execute([$id]);
         $storageNames = $query->fetchAll(PDO::FETCH_COLUMN);
 
-        (new Deals($this->db))->refundOpenSales($id);
         transaction(fn() => $this->db->prepare('DELETE FROM users WHERE id = ?')->execute([$id]));
         FileStore::delete($storageNames);
     }

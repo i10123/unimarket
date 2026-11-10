@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// Консоль администратора: список пользователей, подробная статистика каждого и удаление.
+// Консоль администратора: список пользователей, подробная статистика каждого, сброс пароля и удаление.
 // Запуск (панель и модуль MySQL-8.4 включены): php scripts/admin.php
 if (PHP_SAPI !== 'cli') {
     exit;
@@ -11,10 +11,9 @@ require __DIR__ . '/../backend/bootstrap.php';
 
 const KINDS = [
     'welcome' => 'Бонус при регистрации',
-    'reward' => 'Награда за материал',
-    'reserve' => 'Резерв при покупке',
-    'release' => 'Выплата / списание резерва',
-    'refund' => 'Возврат',
+    'reward' => 'Награда за бесплатный материал',
+    'purchase' => 'Покупка',
+    'sale' => 'Продажа',
 ];
 
 function ask(string $question): string
@@ -53,14 +52,14 @@ function printTable(array $headers, array $rows): void
 function users(string $where = '', ?string $value = null): array
 {
     $query = db()->prepare(
-        "SELECT u.id, u.login, u.first_name, u.last_name, u.email, u.course, u.created_at, w.available, w.reserved,
+        "SELECT u.id, u.login, u.first_name, u.last_name, u.email, u.course, u.contact, u.created_at, w.available,
             (SELECT COUNT(*) FROM materials WHERE author_id = u.id) AS materials,
             (SELECT COUNT(*) FROM purchases p JOIN materials m ON m.id = p.material_id
-                WHERE m.author_id = u.id AND p.status = 'completed') AS sales,
+                WHERE m.author_id = u.id) AS sales,
             (SELECT COALESCE(SUM(p.price), 0) FROM purchases p JOIN materials m ON m.id = p.material_id
-                WHERE m.author_id = u.id AND p.status = 'completed') AS earned,
+                WHERE m.author_id = u.id) AS earned,
             (SELECT COUNT(*) FROM purchases WHERE buyer_id = u.id) AS purchases,
-            (SELECT COALESCE(SUM(price), 0) FROM purchases WHERE buyer_id = u.id AND status <> 'refunded') AS spent,
+            (SELECT COALESCE(SUM(price), 0) FROM purchases WHERE buyer_id = u.id) AS spent,
             (SELECT COUNT(*) FROM favorites WHERE user_id = u.id) AS favorites,
             r.average AS rating, COALESCE(r.votes, 0) AS votes
         FROM users u
@@ -88,12 +87,12 @@ function listUsers(): void
 {
     $rows = array_map(
         fn(array $u): array => [
-            $u['id'], $u['login'], trim("{$u['first_name']} {$u['last_name']}") ?: null, $u['available'], $u['reserved'],
+            $u['id'], $u['login'], trim("{$u['first_name']} {$u['last_name']}") ?: null, $u['available'],
             $u['materials'], $u['sales'], $u['purchases'], $u['created_at'],
         ],
         users()
     );
-    printTable(['ID', 'Логин', 'Имя', 'Баллы', 'Резерв', 'Материалов', 'Продаж', 'Покупок', 'Создан'], $rows);
+    printTable(['ID', 'Логин', 'Имя', 'Баллы', 'Материалов', 'Продаж', 'Покупок', 'Создан'], $rows);
     echo 'Всего: ', count($rows), PHP_EOL;
 }
 
@@ -106,25 +105,42 @@ function showUser(): void
 
     printTable(['Поле', 'Значение'], [
         ['ID', $u['id']], ['Логин', $u['login']], ['Имя', $u['first_name']], ['Фамилия', $u['last_name']],
-        ['Email', $u['email']], ['Курс', $u['course']], ['Создан', $u['created_at']],
-        ['Баллы доступно', $u['available']], ['Баллы в резерве', $u['reserved']],
+        ['Email', $u['email']], ['Курс', $u['course']], ['Контакты для связи', $u['contact'] ?: null], ['Создан', $u['created_at']],
+        ['Баллы', $u['available']],
         ['Опубликовано материалов', $u['materials']],
-        ['Продаж завершено', $u['sales']], ['Заработано с продаж', $u['earned']],
+        ['Продаж', $u['sales']], ['Заработано с продаж', $u['earned']],
         ['Покупок', $u['purchases']], ['Потрачено на покупки', $u['spent']],
         ['В избранном', $u['favorites']],
         ['Рейтинг продавца', $u['votes'] > 0 ? "{$u['rating']} (оценок: {$u['votes']})" : 'нет оценок'],
     ]);
 
-    $query = db()->prepare('SELECT kind, available_delta, reserved_delta, created_at FROM point_entries WHERE user_id = ? ORDER BY id DESC');
+    $query = db()->prepare('SELECT kind, delta, created_at FROM point_entries WHERE user_id = ? ORDER BY id DESC');
     $query->execute([$u['id']]);
     $entries = array_map(fn(array $entry): array => ['kind' => KINDS[$entry['kind']]] + $entry, $query->fetchAll());
 
     echo PHP_EOL, 'История баллов:', PHP_EOL;
-    printTable(['Событие', 'Баллы', 'Резерв', 'Когда'], $entries);
+    printTable(['Событие', 'Баллы', 'Когда'], $entries);
+}
+
+// Задаёт новый пароль: почты нет, поэтому забытый пароль восстанавливает только администратор.
+function resetPassword(): void
+{
+    $u = askUser();
+    if ($u === null) {
+        return;
+    }
+
+    try {
+        $password = readPassword(ask("Новый пароль для {$u['login']} (виден при вводе, от 8 символов): "));
+    } catch (ApiError $error) {
+        echo $error->getMessage(), PHP_EOL;
+        return;
+    }
+    db()->prepare('UPDATE users SET password_hash = ? WHERE id = ?')->execute([password_hash($password, PASSWORD_ARGON2ID), $u['id']]);
+    echo 'Пароль изменён. Передай его пользователю, пусть сменит в настройках.', PHP_EOL;
 }
 
 // Удаляет пользователя с материалами, покупками, файлами и историей (каскадом).
-// Открытые покупки его материалов сначала возвращаются покупателям.
 function deleteUser(): void
 {
     $u = askUser();
@@ -154,13 +170,15 @@ try {
         echo PHP_EOL, 'УниМаркет — консоль администратора', PHP_EOL;
         echo '1. Список пользователей', PHP_EOL;
         echo '2. Пользователь: статистика и история баллов', PHP_EOL;
-        echo '3. Удалить пользователя', PHP_EOL;
+        echo '3. Сбросить пароль', PHP_EOL;
+        echo '4. Удалить пользователя', PHP_EOL;
         echo '0. Выход', PHP_EOL;
 
         match (ask('> ')) {
             '1' => listUsers(),
             '2' => showUser(),
-            '3' => deleteUser(),
+            '3' => resetPassword(),
+            '4' => deleteUser(),
             '0' => exit,
             default => print('Нет такого пункта.' . PHP_EOL),
         };

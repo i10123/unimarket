@@ -16,11 +16,43 @@ $pdo = new PDO($dsn, 'root', getenv('MYSQL_ROOT_PASSWORD') ?: '', [
 ]);
 $pdo->exec('CREATE DATABASE IF NOT EXISTS unimarket CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
 $pdo->exec('USE unimarket');
+
+// Старая схема (резерв баллов, статусы покупок, замена файла): пересоздаём покупки, файлы и историю
+// баллов, остальные данные сохраняются. Бесплатные завершённые покупки переносятся; платные и
+// незавершённые нельзя пересчитать, поэтому при них скрипт останавливается, ничего не меняя.
+$old = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = 'unimarket' AND TABLE_NAME = 'wallets' AND COLUMN_NAME = 'reserved'")->fetchColumn() > 0;
+if ($old) {
+    if ($pdo->query("SELECT COUNT(*) FROM purchases WHERE price > 0 OR status <> 'completed'")->fetchColumn() > 0) {
+        exit("В базе есть платные или незавершённые покупки старого формата, перенос не предусмотрен. Удали базу unimarket в phpMyAdmin и запусти init-db и seed заново.\n");
+    }
+    $pdo->exec('CREATE TABLE purchases_copy AS SELECT id, buyer_id, material_id, price, purchased_at, rating FROM purchases');
+    $pdo->exec('CREATE TABLE entries_copy AS SELECT user_id, material_id, kind, available_delta AS delta, created_at FROM point_entries');
+    $pdo->exec('CREATE TABLE files_copy AS SELECT material_id, original_name, storage_name, mime_type, size_bytes, created_at FROM files');
+    foreach (['point_entries', 'files', 'purchases'] as $table) {
+        $pdo->exec("DROP TABLE $table");
+    }
+    $pdo->exec('ALTER TABLE wallets DROP COLUMN reserved');
+    // Контакт у прежних пользователей пуст: они заполнят его в настройках.
+    $pdo->exec("ALTER TABLE users ADD COLUMN contact VARCHAR(255) NOT NULL DEFAULT '' AFTER course");
+    $pdo->exec('ALTER TABLE users ALTER COLUMN contact DROP DEFAULT');
+}
+
 // По одному запросу: exec() с несколькими сообщает об ошибке только первого.
 foreach (preg_split('/;\s*$/m', file_get_contents($root . '/database/schema.sql')) as $sql) {
     if (trim($sql) !== '') {
         $pdo->exec($sql);
     }
+}
+
+if ($old) {
+    $pdo->exec('INSERT INTO purchases (id, buyer_id, material_id, price, purchased_at, rating) SELECT * FROM purchases_copy');
+    $pdo->exec('INSERT INTO point_entries (user_id, material_id, kind, delta, created_at) SELECT * FROM entries_copy');
+    $pdo->exec('INSERT INTO files (material_id, original_name, storage_name, mime_type, size_bytes, created_at) SELECT * FROM files_copy');
+    foreach (['entries_copy', 'files_copy', 'purchases_copy'] as $table) {
+        $pdo->exec("DROP TABLE $table");
+    }
+    echo "Схема обновлена: покупки без резерва, у пользователей появился контакт.\n";
 }
 
 // Схема уже могла быть создана старой версией: ключи без ON DELETE CASCADE пересоздаём.

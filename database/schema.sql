@@ -10,13 +10,14 @@ CREATE TABLE IF NOT EXISTS users (
     last_name VARCHAR(60) NULL,
     email VARCHAR(255) NULL,
     course TINYINT UNSIGNED NULL CHECK (course BETWEEN 1 AND 6),
+    -- Свободный текст (почта, телефон, Telegram, ссылка), от 5 символов. Виден всем: по нему пишут продавцу.
+    contact VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS wallets (
     user_id BIGINT UNSIGNED PRIMARY KEY,
     available BIGINT NOT NULL DEFAULT 0 CHECK (available >= 0),
-    reserved BIGINT NOT NULL DEFAULT 0 CHECK (reserved >= 0),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
@@ -42,36 +43,24 @@ CREATE TABLE IF NOT EXISTS purchases (
     buyer_id BIGINT UNSIGNED NOT NULL,
     material_id BIGINT UNSIGNED NOT NULL,
     price BIGINT NOT NULL CHECK (price >= 0),
-    status ENUM('pending', 'problem', 'completed', 'refunded') NOT NULL DEFAULT 'pending',
     purchased_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    -- pending: до автоподтверждения; problem: срок продавца на замену или возврат.
-    deadline_at DATETIME NOT NULL,
-    problem TEXT NULL,
-    problem_at DATETIME NULL,
-    replaced_at DATETIME NULL,
-    completed_at DATETIME NULL,
     rating TINYINT UNSIGNED NULL CHECK (rating BETWEEN 1 AND 5),
-    CHECK (rating IS NULL OR status = 'completed'),
     FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE,
     UNIQUE KEY one_purchase (buyer_id, material_id),
-    INDEX deadlines (status, deadline_at),
-    INDEX sales (material_id, status, purchased_at)
+    INDEX sales (material_id, purchased_at)
 ) ENGINE=InnoDB;
 
--- Исходные файлы относятся к материалу, замена — только к конкретной покупке.
+-- Файлы материала: их скачивают автор и покупатели.
 CREATE TABLE IF NOT EXISTS files (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    material_id BIGINT UNSIGNED NULL,
-    purchase_id BIGINT UNSIGNED NULL,
+    material_id BIGINT UNSIGNED NOT NULL,
     original_name VARCHAR(255) NOT NULL,
     storage_name VARCHAR(100) NOT NULL UNIQUE,
     mime_type VARCHAR(100) NOT NULL,
     size_bytes BIGINT UNSIGNED NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CHECK ((material_id IS NOT NULL) + (purchase_id IS NOT NULL) = 1),
-    FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE,
-    FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE
+    FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS favorites (
@@ -88,15 +77,14 @@ CREATE TABLE IF NOT EXISTS point_entries (
     user_id BIGINT UNSIGNED NOT NULL,
     purchase_id BIGINT UNSIGNED NULL,
     material_id BIGINT UNSIGNED NULL,
-    -- welcome — бонус при регистрации, reward — награда за бесплатный материал.
-    kind ENUM('welcome', 'reward', 'reserve', 'release', 'refund') NOT NULL,
-    available_delta BIGINT NOT NULL,
-    reserved_delta BIGINT NOT NULL,
+    -- welcome: бонус при регистрации, reward: награда за бесплатный материал,
+    -- purchase и sale: списание у покупателя и начисление автору.
+    kind ENUM('welcome', 'reward', 'purchase', 'sale') NOT NULL,
+    delta BIGINT NOT NULL CHECK (delta <> 0),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CHECK (available_delta <> 0 OR reserved_delta <> 0),
     CHECK ((kind = 'welcome' AND material_id IS NULL AND purchase_id IS NULL)
         OR (kind = 'reward' AND material_id IS NOT NULL AND purchase_id IS NULL)
-        OR (kind IN ('reserve', 'release', 'refund') AND purchase_id IS NOT NULL AND material_id IS NULL)),
+        OR (kind IN ('purchase', 'sale') AND purchase_id IS NOT NULL AND material_id IS NULL)),
     FOREIGN KEY (user_id) REFERENCES wallets(user_id) ON DELETE CASCADE,
     FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
     FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE,

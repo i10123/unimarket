@@ -5,6 +5,7 @@ declare(strict_types=1);
 // случайных типов, у каждого один файл .md. Запускать можно повторно: прежние демо-аккаунты
 // и их материалы удаляются, обычные аккаунты не затрагиваются.
 // Запуск (панель и модуль MySQL-8.4 включены): php scripts/seed.php
+// То же и ещё покупки с оценками, чтобы показ выглядел живым: php scripts/seed.php demo
 // Только удалить демо-данные, ничего не создавая: php scripts/seed.php clear
 if (PHP_SAPI !== 'cli') {
     exit;
@@ -30,11 +31,23 @@ const TOPICS = [
     'Химия' => ['Органическая химия', 'Неорганическая химия', 'Физическая химия', 'Аналитическая химия', 'Биохимия', 'Химическая кинетика'],
 ];
 
-// Тип => [окончание названия, описание].
+// Тип => [окончание названия, варианты описания].
 const KINDS = [
-    'notes' => ['конспект лекций', 'Главное из лекций в коротких пунктах: определения, примеры и схемы.'],
-    'solutions' => ['задачи с решениями', 'Разобранные задачи с пошаговыми решениями и ответами.'],
-    'cheatsheet' => ['шпаргалка', 'Формулы и определения на нескольких страницах, только то, что спрашивают.'],
+    'notes' => ['конспект лекций', [
+        'Главное из лекций в коротких пунктах: определения, примеры и схемы.',
+        'Записывал на каждой лекции, потом сверил с учебником. Подойдёт, чтобы быстро повторить перед зачётом.',
+        'Аккуратный конспект по всему семестру, с примерами из практики и выделенными терминами.',
+    ]],
+    'solutions' => ['задачи с решениями', [
+        'Разобранные задачи с пошаговыми решениями и ответами.',
+        'Типовые задачи из контрольных прошлых лет: у каждой решение и короткое пояснение, как до него дойти.',
+        'Подборка задач разной сложности, от простых до тех, что попадаются на экзамене.',
+    ]],
+    'cheatsheet' => ['шпаргалка', [
+        'Формулы и определения на нескольких страницах, только то, что спрашивают.',
+        'Одна сжатая страница на экзамен: ключевые формулы, исключения и частые ошибки.',
+        'Краткая выжимка курса, удобно распечатать и держать под рукой при подготовке.',
+    ]],
 ];
 
 const PRICES = [0, 0, 0, 30, 40, 50, 60, 80, 90, 120, 150, 180];
@@ -53,8 +66,9 @@ if (($argv[1] ?? '') === 'clear') {
 $users = [];
 for ($i = 0; $i < 10; $i++) {
     [$first, $last] = NAMES[$i] ?? [null, null];
-    $users[] = $auth->register(sprintf('demo%02d', $i + 1), DEMO_PASSWORD, [
-        'first_name' => $first, 'last_name' => $last, 'email' => null, 'course' => random_int(1, 4),
+    $login = sprintf('demo%02d', $i + 1);
+    $users[] = $auth->register($login, DEMO_PASSWORD, [
+        'first_name' => $first, 'last_name' => $last, 'email' => null, 'course' => random_int(1, 4), 'contact' => "Telegram: @$login",
     ]);
 }
 
@@ -70,7 +84,8 @@ shuffle($topics);
 
 foreach ($topics as $i => [$subject, $topic]) {
     $type = array_rand(KINDS);
-    [$suffix, $description] = KINDS[$type];
+    [$suffix, $descriptions] = KINDS[$type];
+    $description = $descriptions[array_rand($descriptions)];
     $title = "$topic: $suffix";
 
     // Файл .md создаётся во временной папке, сохранение переносит его в хранилище.
@@ -80,8 +95,26 @@ foreach ($topics as $i => [$subject, $topic]) {
     $file = ['name' => "$topic.md", 'tmp' => $tmp, 'size' => strlen($text), 'mime' => 'text/markdown'];
 
     $id = $market->create($users[$i % 10], [$title, $description, $subject, $type, random_int(1, 4), PRICES[array_rand(PRICES)]], [$file]);
+    $created[] = $id;
     // Даты публикации раскидываем по последним 30 дням.
     $db->prepare('UPDATE materials SET created_at = NOW() - INTERVAL ? MINUTE WHERE id = ?')->execute([random_int(60, 30 * 24 * 60), $id]);
 }
 
-echo "Готово: 10 пользователей, 50 материалов. Логины demo01 … demo10, пароль — константа DEMO_PASSWORD в этом файле.\n";
+// Режим demo: каждый пользователь покупает три чужих материала, две покупки из трёх получают оценку.
+if (($argv[1] ?? '') === 'demo') {
+    $deals = new Deals($db);
+    foreach ($users as $buyer) {
+        foreach (array_rand($created, 3) as $key) {
+            try {
+                $purchaseId = $deals->buy($buyer, $created[$key]);
+                if (random_int(0, 2) > 0) {
+                    $deals->rate($buyer, $purchaseId, random_int(3, 5));
+                }
+            } catch (ApiError) {
+                // Свой материал или не хватило баллов: эту покупку пропускаем.
+            }
+        }
+    }
+}
+
+echo "Готово: 10 пользователей, 50 материалов. Логины demo01 … demo10, контакт «Telegram: @demo01», пароль — константа DEMO_PASSWORD в этом файле.\n";

@@ -16,21 +16,11 @@ final class Points
             ->execute($userIds);
     }
 
-    // kind: reward, reserve, release или refund. Отрицательный остаток запрещает CHECK в БД.
-    public static function add(
-        PDO $db,
-        int $userId,
-        string $kind,
-        int $available,
-        int $reserved,
-        ?int $purchaseId = null,
-        ?int $materialId = null,
-    ): void {
-        $db->prepare('UPDATE wallets SET available = available + ?, reserved = reserved + ? WHERE user_id = ?')
-            ->execute([$available, $reserved, $userId]);
-        $db->prepare(
-            'INSERT INTO point_entries (user_id, purchase_id, material_id, kind, available_delta, reserved_delta)
-            VALUES (?, ?, ?, ?, ?, ?)'
-        )->execute([$userId, $purchaseId, $materialId, $kind, $available, $reserved]);
+    // kind: reward, purchase или sale. Отрицательный остаток запрещает CHECK в БД.
+    public static function add(PDO $db, int $userId, string $kind, int $delta, ?int $purchaseId = null, ?int $materialId = null): void
+    {
+        $db->prepare('UPDATE wallets SET available = available + ? WHERE user_id = ?')->execute([$delta, $userId]);
+        $db->prepare('INSERT INTO point_entries (user_id, purchase_id, material_id, kind, delta) VALUES (?, ?, ?, ?, ?)')
+            ->execute([$userId, $purchaseId, $materialId, $kind, $delta]);
     }
 }

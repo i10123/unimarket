@@ -65,13 +65,18 @@ function storageDir(string $name): string
     return $path;
 }
 
+// Вход держится 7 дней после последнего захода: каждый запрос продлевает и файл сессии, и куку.
+const SESSION_LIFETIME = 7 * 24 * 60 * 60;
+
 function startSession(): void
 {
     session_save_path(storageDir('sessions'));
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');
+    ini_set('session.gc_maxlifetime', (string) SESSION_LIFETIME);
     session_name('unimarket_session');
     session_set_cookie_params([
+        'lifetime' => SESSION_LIFETIME,
         'httponly' => true,
         'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
         'samesite' => 'Lax',
@@ -79,6 +84,12 @@ function startSession(): void
     ]);
     session_start();
     $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
+
+    // PHP сам отправляет куку только при создании сессии, поэтому для существующей продлеваем её вручную.
+    if (($_COOKIE[session_name()] ?? '') === session_id()) {
+        $options = ['expires' => time() + SESSION_LIFETIME] + array_diff_key(session_get_cookie_params(), ['lifetime' => 0]);
+        setcookie(session_name(), session_id(), $options);
+    }
 }
 
 // Новый идентификатор сессии после входа или выхода защищает от подмены сессии.
@@ -88,17 +99,15 @@ function renewSession(): void
     $_SESSION['csrf'] = bin2hex(random_bytes(32));
 }
 
-// Вошедший пользователь с остатками кошелька или null для гостя.
-// Заодно закрываем покупки с истёкшим сроком: планировщика нет, остатки считаем при обращении.
+// Вошедший пользователь с балансом или null для гостя.
 function currentUser(): ?array
 {
     if (!isset($_SESSION['user_id'])) {
         return null;
     }
 
-    (new Deals(db()))->settleOverdue();
     $query = db()->prepare(
-        'SELECT u.id, u.login, ' . DISPLAY_NAME . ' AS display_name, w.available, w.reserved
+        'SELECT u.id, u.login, ' . DISPLAY_NAME . ' AS display_name, w.available
         FROM users u
         JOIN wallets w ON w.user_id = u.id
         WHERE u.id = ?'

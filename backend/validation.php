@@ -28,7 +28,7 @@ function readPassword(mixed $value): string
     return $value;
 }
 
-// Профиль: имя, фамилия, курс, email. Все поля необязательны, пустое значение — null.
+// Профиль: имя, фамилия, email, курс необязательны (пустое значение — null), контакт обязателен.
 function readProfile(array $input): array
 {
     $names = [];
@@ -49,5 +49,11 @@ function readProfile(array $input): array
         throw new ApiError('Курс: от 1 до 6.');
     }
 
-    return $names + ['email' => $email, 'course' => $course === null ? null : (int) $course];
+    // Контакт: свободный текст без фильтрации (почта, телефон, Telegram, ссылка), его видят все.
+    $contact = cleanText($input['contact'] ?? '');
+    if ($contact === null || mb_strlen($contact) < 5 || mb_strlen($contact) > 255) {
+        throw new ApiError('Контакты для связи: от 5 до 255 символов.');
+    }
+
+    return $names + ['email' => $email, 'course' => $course === null ? null : (int) $course, 'contact' => $contact];
 }

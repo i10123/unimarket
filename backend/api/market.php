@@ -5,7 +5,7 @@ declare(strict_types=1);
 //   GET  ?subjects     — список предметов;
 //   GET  ?id=N         — страница материала;
 //   GET  (фильтры)     — каталог, избранное (favorites=1) или материалы автора (author=N);
-//   POST action=publish (форма с файлами) или favorite.
+//   POST action=publish или update (формы с файлами), publish_state (on=true/false: вернуть или снять с публикации) или favorite.
 
 require __DIR__ . '/../bootstrap.php';
 
@@ -23,6 +23,8 @@ runApi(function (): void {
     $input = postInput();
     match ($input['action'] ?? '') {
         'publish' => respond(['id' => $market->publish($user['id'], $input)], 201),
+        'update' => $market->update($user['id'], (int) ($input['id'] ?? 0), $input),
+        'publish_state' => $market->setPublished($user['id'], (int) ($input['id'] ?? 0), ($input['on'] ?? false) === true),
         'favorite' => $market->favorite($user['id'], (int) ($input['material_id'] ?? 0), ($input['on'] ?? false) === true),
         default => throw new ApiError('Неизвестное действие.', 400),
     };
