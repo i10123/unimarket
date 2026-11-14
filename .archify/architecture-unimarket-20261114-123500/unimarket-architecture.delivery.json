@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "85c65608-d78a-4541-93c0-068c5eb5df7d",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "D:\\GitHub Projects\\unimarket\\.archify\\architecture-unimarket-20261114-123500\\candidate.json",
+  "output": "D:\\GitHub Projects\\unimarket\\.archify\\architecture-unimarket-20261114-123500\\unimarket-architecture.html",
+  "specification": {
+    "sha256": "c09e900c76ba2310ebad30fb1a715895a9a7129a6e733ce34d843e7f3f25baa4",
+    "bytes": 6043
+  },
+  "artifact": {
+    "sha256": "99dd73e05260c3a5f3e5cb3c07520e099fb23abeccb1c949e1148037f24829c4",
+    "bytes": 847070
+  }
+}

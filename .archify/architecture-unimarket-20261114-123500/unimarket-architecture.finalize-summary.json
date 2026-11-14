@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "D:\\GitHub Projects\\unimarket\\.archify\\architecture-unimarket-20261114-123500\\candidate.json",
+    "sha256": "c09e900c76ba2310ebad30fb1a715895a9a7129a6e733ce34d843e7f3f25baa4",
+    "bytes": 6043
+  },
+  "artifact": {
+    "path": "D:\\GitHub Projects\\unimarket\\.archify\\architecture-unimarket-20261114-123500\\unimarket-architecture.html",
+    "sha256": "99dd73e05260c3a5f3e5cb3c07520e099fb23abeccb1c949e1148037f24829c4",
+    "bytes": 847070
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [
+    {
+      "code": "i18n/locale-fallback",
+      "severity": "warning",
+      "message": "meta.locale \"ru\" has no bundled catalog and no usable meta.translations; the Viewer chrome and <html lang> fall back to English.",
+      "subject": {
+        "diagramType": "architecture",
+        "path": "/meta/locale"
+      },
+      "evidence": {
+        "locale": "ru",
+        "bundledLocales": [
+          "en",
+          "zh-CN",
+          "zh-TW",
+          "es",
+          "ko",
+          "ar"
+        ]
+      },
+      "supportedFixes": [
+        "Supply meta.translations for this locale.",
+        "Use a bundled locale: en, zh-CN, zh-TW, es, ko, ar."
+      ]
+    }
+  ],
+  "diagnosticSummary": {
+    "total": 1,
+    "shown": 1,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "D:\\GitHub Projects\\unimarket\\.archify\\architecture-unimarket-20261114-123500\\unimarket-architecture.finalize.json",
+    "summaryReceipt": "D:\\GitHub Projects\\unimarket\\.archify\\architecture-unimarket-20261114-123500\\unimarket-architecture.finalize-summary.json",
+    "browserCheckReceipt": "D:\\GitHub Projects\\unimarket\\.archify\\architecture-unimarket-20261114-123500\\unimarket-architecture.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-11-14T09:52:20.949Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 6007,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  },
+  "visualReviewRecommendation": {
+    "action": "inspect-route-readability",
+    "signals": {
+      "routesOverSuggestedBends": 2
+    },
+    "reason": "Automated gates passed, but crossings or detours still need perceptual review before claiming visual quality.",
+    "affectedRoutes": {
+      "crossings": [],
+      "detours": [
+        {
+          "relationship": {
+            "id": "browser-router",
+            "from": "browser",
+            "to": "router",
+            "label": "HTTP: страницы и API",
+            "collectionIndex": 1,
+            "artifactIndex": 2
+          },
+          "bends": 3,
+          "stretch": 1.279
+        },
+        {
+          "relationship": {
+            "id": "api-services",
+            "from": "api",
+            "to": "services",
+            "label": "валидация и сценарии",
+            "collectionIndex": 3,
+            "artifactIndex": 4
+          },
+          "bends": 3,
+          "stretch": 1.276
+        }
+      ],
+      "truncated": false
+    },
+    "hints": [
+      "browser → router needs 3 bends: move node browser or router so they share a row or column with matching centers, or sit diagonally with a clear corner.",
+      "api → services needs 3 bends: move node api or services so they share a row or column with matching centers, or sit diagonally with a clear corner."
+    ],
+    "repair": "Trace these relationships at the desktop viewport. For Architecture, use references/architecture-layout-repair.md: reflow a blocked main path or tangled connected scene, and repair an isolated defect locally only when the surrounding composition is accepted. Preserve all semantic content and user-fixed geometry. Rerun finalize once after the edit."
+  }
+}
