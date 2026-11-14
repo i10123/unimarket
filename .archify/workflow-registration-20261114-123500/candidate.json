@@ -1,0 +1,162 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Регистрация пользователя в УниМаркете",
+    "subtitle": "Аккаунт создаётся только после обязательного третьего шага",
+    "locale": "ru",
+    "output": ".archify/workflow-registration-20261114-123500/user-registration.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/i10123/unimarket.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "1a22c096ca6709af961b8b8217893d33d001c362"
+    }
+  },
+  "lanes": [
+    { "id": "browser", "label": "Браузер студента" },
+    { "id": "api", "label": "PHP API / auth" },
+    { "id": "persistence", "label": "Сессия и MySQL" },
+    { "id": "exception", "label": "Проверки и отказ", "variant": "exception" }
+  ],
+  "phases": [
+    { "id": "prepare", "label": "Подготовка", "fromCol": 0, "toCol": 1 },
+    { "id": "verify", "label": "Проверка данных", "fromCol": 2, "toCol": 3, "variant": "security" },
+    { "id": "create", "label": "Создание и вход", "fromCol": 4, "toCol": 5, "variant": "emphasis" }
+  ],
+  "mainPath": ["registration-form", "check-login", "three-steps", "register", "validate", "create-account", "session", "catalog"],
+  "nodes": [
+    {
+      "id": "registration-form",
+      "lane": "browser",
+      "col": 0,
+      "type": "frontend",
+      "label": "Страница регистрации",
+      "sublabel": "логин, пароль и правила",
+      "sources": [
+        { "path": "pages/auth/register.html", "line": 23, "end_line": 59, "label": "шаг 1" }
+      ]
+    },
+    {
+      "id": "check-login",
+      "lane": "api",
+      "col": 1,
+      "type": "backend",
+      "label": "Проверить логин",
+      "sublabel": "GET CSRF, затем POST action=check_login",
+      "sources": [
+        { "path": "assets/js/register.js", "line": 18, "end_line": 24, "label": "шаг 1 на клиенте" },
+        { "path": "backend/api/auth.php", "line": 26, "end_line": 37, "label": "проверка занятости" }
+      ]
+    },
+    {
+      "id": "three-steps",
+      "lane": "browser",
+      "col": 2,
+      "type": "frontend",
+      "label": "Шаги 2 и 3",
+      "sublabel": "профиль — опционально; контакт — обязателен",
+      "sources": [
+        { "path": "pages/auth/register.html", "line": 60, "end_line": 103, "label": "поля форм" },
+        { "path": "assets/js/register.js", "line": 26, "end_line": 55, "label": "переходы" }
+      ]
+    },
+    {
+      "id": "register",
+      "lane": "api",
+      "col": 3,
+      "type": "backend",
+      "label": "POST /api/auth",
+      "sublabel": "action=register + CSRF",
+      "sources": [
+        { "path": "assets/js/register.js", "line": 29, "end_line": 49, "label": "создание аккаунта" },
+        { "path": "backend/bootstrap.php", "line": 136, "end_line": 156, "label": "проверка CSRF" }
+      ]
+    },
+    {
+      "id": "validate",
+      "lane": "api",
+      "col": 4,
+      "type": "security",
+      "label": "Валидация и лимит",
+      "sublabel": "правила, профиль, 60 попыток / 15 мин",
+      "sources": [
+        { "path": "backend/api/auth.php", "line": 23, "end_line": 46, "label": "ветка register" },
+        { "path": "backend/validation.php", "line": 13, "end_line": 56, "label": "поля профиля" },
+        { "path": "backend/bootstrap.php", "line": 177, "end_line": 203, "label": "rate limit" }
+      ]
+    },
+    {
+      "id": "create-account",
+      "lane": "persistence",
+      "col": 5,
+      "type": "database",
+      "label": "Одна транзакция MySQL",
+      "sublabel": "users + wallet 100 + welcome entry",
+      "sources": [
+        { "path": "backend/AuthHandler.php", "line": 17, "end_line": 44, "label": "создание и бонус" },
+        { "path": "database/schema.sql", "line": 3, "end_line": 22, "label": "users и wallets" },
+        { "path": "database/schema.sql", "line": 74, "end_line": 93, "label": "история баллов" }
+      ]
+    },
+    {
+      "id": "session",
+      "lane": "api",
+      "col": 5,
+      "type": "security",
+      "label": "Новая сессия",
+      "sublabel": "новый ID, CSRF, user_id",
+      "sources": [
+        { "path": "backend/api/auth.php", "line": 48, "end_line": 51, "label": "вход после register" },
+        { "path": "backend/bootstrap.php", "line": 95, "end_line": 100, "label": "renewSession" }
+      ]
+    },
+    {
+      "id": "catalog",
+      "lane": "browser",
+      "col": 5,
+      "type": "frontend",
+      "label": "Каталог",
+      "sublabel": "переход после HTTP 201",
+      "sources": [
+        { "path": "assets/js/register.js", "line": 40, "end_line": 49, "label": "redirect" }
+      ]
+    },
+    {
+      "id": "login-taken",
+      "lane": "exception",
+      "col": 2,
+      "type": "security",
+      "label": "Логин занят",
+      "sublabel": "409 и возврат к шагу 1",
+      "sources": [
+        { "path": "backend/api/auth.php", "line": 31, "end_line": 36, "label": "409 check_login" },
+        { "path": "assets/js/register.js", "line": 40, "end_line": 47, "label": "409 при регистрации" }
+      ]
+    }
+  ],
+  "edges": [
+    { "id": "check-login-request", "from": "registration-form", "to": "check-login", "label": "GET CSRF, затем логин", "variant": "security", "role": "main" },
+    { "id": "login-ok", "from": "check-login", "to": "three-steps", "label": "логин свободен", "variant": "emphasis", "role": "main" },
+    { "id": "login-conflict", "from": "check-login", "to": "login-taken", "label": "409", "variant": "security", "role": "error" },
+    { "id": "complete-forms", "from": "three-steps", "to": "register", "label": "профиль и контакт", "variant": "emphasis", "role": "main" },
+    { "id": "validate-registration", "from": "register", "to": "validate", "label": "rules + входные данные", "variant": "security", "role": "main" },
+    { "id": "write-transaction", "from": "validate", "to": "create-account", "label": "валидная регистрация", "variant": "emphasis", "role": "main" },
+    { "id": "start-session", "from": "create-account", "to": "session", "label": "commit", "variant": "emphasis", "role": "main" },
+    { "id": "redirect-catalog", "from": "session", "to": "catalog", "label": "201 + пользователь", "variant": "emphasis", "role": "main" },
+    { "id": "retry-login", "from": "login-taken", "to": "registration-form", "label": "исправить логин", "variant": "dashed", "role": "return", "route": "return-left" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Что создаётся",
+      "items": ["Пользователь с Argon2id-хешем пароля", "Кошелёк на 100 баллов и запись welcome"]
+    },
+    {
+      "dot": "rose",
+      "title": "Что не создаётся раньше",
+      "items": ["Шаг check_login только проверяет уникальность", "Аккаунт появляется лишь после обязательного контакта на шаге 3"]
+    }
+  ]
+}
