@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Архитектура УниМаркета",
+    "subtitle": "Учебный маркетплейс: статический frontend, PHP API и MySQL",
+    "locale": "ru",
+    "output": ".archify/architecture-unimarket-20261114-123500/unimarket-architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/i10123/unimarket.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "1a22c096ca6709af961b8b8217893d33d001c362"
+    },
+    "views": [
+      {
+        "id": "request-path",
+        "label": "Запрос пользователя",
+        "focus": ["browser", "router", "api", "services", "mysql"],
+        "note": "Основной путь страницы и API до постоянных данных."
+      },
+      {
+        "id": "file-path",
+        "label": "Файлы и сессии",
+        "focus": ["browser", "assets", "router", "api", "storage"],
+        "note": "Статика выдаётся напрямую, а закрытые файлы и сессии хранятся вне веб-доступа."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Браузер студента",
+      "sublabel": "лендинг и личный кабинет",
+      "pos": [40, 240],
+      "size": [150, 64],
+      "sources": [
+        { "path": "pages/auth/register.html", "line": 1, "end_line": 12, "label": "страница регистрации" }
+      ]
+    },
+    {
+      "id": "assets",
+      "type": "frontend",
+      "label": "HTML, CSS и ES-модули",
+      "sublabel": "страницы в pages/, ресурсы в assets/",
+      "pos": [250, 70],
+      "size": [164, 70],
+      "sources": [
+        { "path": ".htaccess", "line": 1, "end_line": 7, "label": "статические ресурсы" },
+        { "path": "assets/js/common.js", "line": 10, "end_line": 38, "label": "клиент API" }
+      ]
+    },
+    {
+      "id": "router",
+      "type": "cloud",
+      "label": "Apache + router.php",
+      "sublabel": "белый список страниц и API",
+      "pos": [250, 250],
+      "size": [164, 70],
+      "sources": [
+        { "path": "router.php", "line": 4, "end_line": 45, "label": "маршрутизация" },
+        { "path": ".htaccess", "line": 1, "end_line": 7, "label": "rewrite-правило" }
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "PHP API",
+      "sublabel": "auth, market, deals, account, download",
+      "pos": [480, 250],
+      "size": [172, 70],
+      "sources": [
+        { "path": "router.php", "line": 26, "end_line": 41, "label": "API-адреса" },
+        { "path": "backend/api/auth.php", "line": 4, "end_line": 52, "label": "обработчик auth" }
+      ]
+    },
+    {
+      "id": "services",
+      "type": "backend",
+      "label": "Доменная логика",
+      "sublabel": "AuthHandler, Market, Deals, Points",
+      "pos": [710, 250],
+      "size": [176, 70],
+      "sources": [
+        { "path": "backend/AuthHandler.php", "line": 17, "end_line": 63, "label": "аккаунты и вход" },
+        { "path": "backend/Deals.php", "line": 12, "end_line": 45, "label": "покупка" },
+        { "path": "backend/Points.php", "line": 4, "end_line": 25, "label": "баллы" }
+      ]
+    },
+    {
+      "id": "storage",
+      "type": "database",
+      "label": "Закрытое storage/",
+      "sublabel": "сессии, лимиты, файлы материалов",
+      "pos": [710, 70],
+      "size": [176, 70],
+      "sources": [
+        { "path": "backend/bootstrap.php", "line": 57, "end_line": 100, "label": "сессии и лимиты" },
+        { "path": "backend/FileStore.php", "line": 4, "end_line": 60, "label": "файлы вне web root" }
+      ]
+    },
+    {
+      "id": "mysql",
+      "type": "database",
+      "label": "MySQL 8.4",
+      "sublabel": "пользователи, кошельки, материалы, покупки",
+      "pos": [1030, 250],
+      "size": [182, 70],
+      "sources": [
+        { "path": "backend/bootstrap.php", "line": 25, "end_line": 41, "label": "PDO" },
+        { "path": "database/schema.sql", "line": 3, "end_line": 94, "label": "схема данных" }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Приложение УниМаркет",
+      "wraps": ["assets", "router", "api", "services", "storage"],
+      "pad": 28
+    }
+  ],
+  "connections": [
+    { "id": "browser-assets", "from": "browser", "to": "assets", "label": "GET статики", "variant": "default" },
+    { "id": "browser-router", "from": "browser", "to": "router", "label": "HTTP: страницы и API", "variant": "emphasis" },
+    { "id": "router-api", "from": "router", "to": "api", "label": "require API-обработчик", "variant": "emphasis" },
+    { "id": "api-services", "from": "api", "to": "services", "label": "валидация и сценарии", "variant": "emphasis" },
+    { "id": "api-storage", "from": "api", "to": "storage", "label": "сессия и лимит IP", "variant": "security" },
+    { "id": "services-storage", "from": "services", "to": "storage", "label": "загрузка файлов", "variant": "default" },
+    { "id": "services-mysql", "from": "services", "to": "mysql", "label": "PDO / SQL / транзакции", "variant": "emphasis" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Доставка",
+      "items": ["Apache раздаёт CSS, JS, иконки и шрифты напрямую", "Остальные маршруты пропускает через router.php"]
+    },
+    {
+      "dot": "emerald",
+      "title": "Данные",
+      "items": ["MySQL хранит семь связанных таблиц", "storage/ не выдаётся браузеру напрямую"]
+    }
+  ]
+}

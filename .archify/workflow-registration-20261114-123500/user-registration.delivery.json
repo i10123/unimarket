@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "f79f7fd3-a1d1-466c-9813-108eeb1afd6e",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "D:\\GitHub Projects\\unimarket\\.archify\\workflow-registration-20261114-123500\\candidate.json",
+  "output": "D:\\GitHub Projects\\unimarket\\.archify\\workflow-registration-20261114-123500\\user-registration.html",
+  "specification": {
+    "sha256": "21f19bd227ef521a6c45ddfa7391cc8e2698f4162f3939bce37f6df43f42ef7d",
+    "bytes": 7465
+  },
+  "artifact": {
+    "sha256": "f90798162716ed31169b78d11ef1d6036dab3d372d87af804b8e454413e13f87",
+    "bytes": 852427
+  }
+}
