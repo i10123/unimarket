@@ -1,0 +1,1 @@
+{"nodes": [{"id": "$graphify-root$_scripts_init_db_php", "label": "init-db.php", "file_type": "code", "source_file": "scripts/init-db.php", "source_location": "L1"}], "edges": [], "raw_calls": [], "php_type_table": {"path": "$graphify-root$/scripts/init-db.php", "table": {"pdo": "PDO"}}}
