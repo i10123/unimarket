@@ -109,5 +109,5 @@ function isValidPassword(mixed $password): bool
     return is_string($password)
         && !str_contains($password, "\0")
         && strlen($password) <= 256
-        && mb_strlen($password) >= 8;
+        && iconv_strlen($password, 'UTF-8') >= 8;
 }
