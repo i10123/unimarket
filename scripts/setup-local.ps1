@@ -1,13 +1,13 @@
 ﻿$ErrorActionPreference = 'Stop'
 $projectDir = Split-Path $PSScriptRoot -Parent
-$runtimeDir = Join-Path $env:LOCALAPPDATA 'UniMarket\runtime'
+$runtimeDir = 'C:\UniMarket\runtime'
 $mysqlDir = Join-Path $runtimeDir 'mysql-8.4.13-winx64'
-$dataDir = Join-Path $projectDir 'storage\mysql8'
+$dataDir = 'C:\UniMarket\mysql8'
 $adminPath = Join-Path $projectDir 'storage\mysql-admin.json'
-$initPath = Join-Path $projectDir 'storage\mysql-init.sql'
+$initPath = 'C:\UniMarket\mysql-init.sql'
 
-Get-Command php -ErrorAction Stop | Out-Null
-foreach ($dir in @($runtimeDir, "$projectDir\storage\sessions", "$projectDir\storage\limits")) {
+$php = (Get-Command php -ErrorAction Stop).Source
+foreach ($dir in @($runtimeDir, (Split-Path $dataDir), "$projectDir\storage\sessions", "$projectDir\storage\limits")) {
     New-Item -ItemType Directory -Path $dir -Force | Out-Null
 }
 if (-not (Test-Path -LiteralPath "$mysqlDir\bin\mysqld.exe")) {
@@ -25,6 +25,9 @@ if (-not (Test-Path -LiteralPath $adminPath)) {
     [Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
     $password = [Convert]::ToHexString($bytes).ToLowerInvariant()
     @{ password = $password } | ConvertTo-Json | Set-Content -LiteralPath $adminPath -Encoding utf8
+}
+if (-not (Test-Path -LiteralPath $initPath) -and -not (Test-Path -LiteralPath "$projectDir\config\local.php")) {
+    $password = (Get-Content -Raw -LiteralPath $adminPath | ConvertFrom-Json).password
     "ALTER USER 'root'@'localhost' IDENTIFIED BY '$password';" | Set-Content -LiteralPath $initPath -Encoding utf8
 }
 if (-not (Test-Path -LiteralPath "$dataDir\mysql")) {
@@ -40,11 +43,11 @@ if (-not (Get-NetTCPConnection -LocalPort 3306 -State Listen -ErrorAction Silent
     $process.Id | Set-Content -LiteralPath "$projectDir\storage\mysql.pid"
     for ($attempt = 0; $attempt -lt 100; $attempt++) {
         if (Get-NetTCPConnection -LocalPort 3306 -State Listen -ErrorAction SilentlyContinue) { break }
-        if ($process.HasExited) { throw 'MySQL не запустился. Проверь журнал storage/mysql8/server.log.' }
+        if ($process.HasExited) { throw "MySQL не запустился. Проверь журнал $dataDir\server.log." }
         Start-Sleep -Milliseconds 200
     }
 }
-& php "$PSScriptRoot\init-db.php"
+& $php -d extension=pdo_mysql "$PSScriptRoot\init-db.php"
 if ($LASTEXITCODE -ne 0) { throw 'Не удалось применить схему базы.' }
 if (Test-Path -LiteralPath $initPath) { Remove-Item -LiteralPath $initPath }
-Write-Output 'MySQL готов на 127.0.0.1:3306. Данные сохраняются в storage/mysql8.'
+Write-Output "MySQL готов на 127.0.0.1:3306. Данные сохраняются в $dataDir."

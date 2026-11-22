@@ -26,7 +26,7 @@
 | `scripts/start.ps1`, `scripts/stop.ps1` | Запуск MySQL + PHP на 127.0.0.1:8000 и штатная остановка |
 | `scripts/init-db.php`, `scripts/shutdown-db.php` | Создание БД и пользователя приложения; остановка MySQL |
 | `tests/auth.php` | Сквозной тест доступа и защиты; создаёт и удаляет свой аккаунт |
-| `storage/` | Данные MySQL (mysql8), пароль root (mysql-admin.json), сессии, лимиты, журналы; не в Git |
+| `storage/` | Пароль root (mysql-admin.json), сессии, лимиты и журналы; не в Git. Данные MySQL — C:\UniMarket\mysql8 |
 | `docs/ЗАЩИТА.md` | Шпаргалка к защите: что сделано, как работает, азы PHP/SQL/JS, вопросы |
 | `docs/mvp/SPECIFICATION.md` | Единственные актуальные требования MVP и порядок этапов |
 | `docs/full/` | Архив полной версии и история прогресса; не требования |

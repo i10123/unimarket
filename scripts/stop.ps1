@@ -13,7 +13,7 @@ if ($connection) {
     $dbProcess = Get-Process -Id $connection[0].OwningProcess -ErrorAction SilentlyContinue
     $env:UNIMARKET_SHUTDOWN = '1'
     try {
-        & php "$PSScriptRoot\shutdown-db.php"
+        & php -d extension=pdo_mysql "$PSScriptRoot\shutdown-db.php"
         if ($LASTEXITCODE -ne 0) { throw 'Не удалось штатно остановить MySQL.' }
         if ($dbProcess -and -not $dbProcess.WaitForExit(20000)) { throw 'MySQL ещё завершает работу.' }
     }
