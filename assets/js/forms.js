@@ -49,10 +49,10 @@ function validate(form) {
     }
   }
 
-  // Поле repeat сравнивается с полем пароля перед ним.
-  const passwords = [...form.querySelectorAll("input[type=password]")];
+  // Поле repeat сравнивается с паролем; тип поля может стать text после нажатия на «глаз».
   const repeat = form.elements.repeat;
-  if (repeat?.value && repeat.value !== passwords[passwords.indexOf(repeat) - 1].value) {
+  const password = form.elements.new_password ?? form.elements.password;
+  if (repeat?.value && password && repeat.value !== password.value) {
     fail(repeat, "Пароли не совпадают.");
   }
 
